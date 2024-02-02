@@ -1,0 +1,8 @@
+db:
+  host: 'pg-lbmrn.vpc-pub-cdb-kr.ntruss.com'
+  username: 'wonsik'
+  password: 'gpgp84132!'
+  synchronize: true
+
+jwt:
+  secret: 'Seoul'
