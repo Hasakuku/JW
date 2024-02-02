@@ -25,17 +25,15 @@ export class AuthService {
 
   async OAuthLogin(socialUser: SocialUserDto): Promise<any> {
     // 1. 회원조회
-    const email: string = socialUser.email;
-    let user: any = await this.userService.getUserByEmail(email); //user를 찾아서
-
+    // const email: string = socialUser.email;
+    // let user: any = await this.userService.getUserByEmail(email); //user를 찾아서
     // 2, 회원가입이 안되어있다면? 자동회원가입
-    if (!user) user = await this.userService.createUser(user); //user가 없으면 하나 만들고, 있으면 이 if문에 들어오지 않을거기때문에 이러나 저러나 user는 존재하는게 됨.
-
+    // if (!user) user = await this.userService.createUser(user); //user가 없으면 하나 만들고, 있으면 이 if문에 들어오지 않을거기때문에 이러나 저러나 user는 존재하는게 됨.
     // 3. 회원가입이 되어있다면? 로그인(AT, RT를 생성해서 브라우저에 전송)한다
-    this.setRefreshToken({ user, res });
-    const accessToken = await this.jwtService.sign(user);
-    res.cookie('jwt', accessToken, { httpOnly: true });
-    res.redirect('http://localhost:3000');
+    // this.setRefreshToken({ user, res });
+    // const accessToken = await this.jwtService.sign(user);
+    // res.cookie('jwt', accessToken, { httpOnly: true });
+    // res.redirect('http://localhost:3000');
   }
 
   //* 회원가입
