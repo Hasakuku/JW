@@ -75,6 +75,7 @@ export class AuthController {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
+      domain: 'http://52.62.68.140',
     });
     res.redirect(process.env.FRONT_URI);
   }
@@ -143,6 +144,7 @@ export class AuthController {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
+      domain: 'http://52.62.68.140',
     });
     // res.redirect(process.env.FRONT_URI);
     return { message: authMessage.LOGIN_SUCCESS };
