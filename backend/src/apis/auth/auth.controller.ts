@@ -73,6 +73,12 @@ export class AuthController {
     res.cookie('jwt', req.user.token);
     res.redirect('http://54.79.191.182');
   }
+  //*카카오 연결 끊기
+  @Get('kakao/withdraw')
+  @ApiOperation({ summary: '카카오 연결 끊기' })
+  async kakaoWithdraw(@Req() req, @Res() res) {
+    res.cookie('jwt', null, { maxAge: 0 });
+  }
   //* 회원가입
   @Post('/signup')
   @ApiOperation({ summary: '이메일 가입' })
