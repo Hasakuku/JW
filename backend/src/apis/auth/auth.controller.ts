@@ -72,7 +72,7 @@ export class AuthController {
   async kakaoLogin(@Req() req, @Res() res) {
     // console.log(req.user);
     res.cookie('jwt', req.user.token, { httpOnly: true });
-    // res.redirect(process.env.FRONT_URI);
+    res.redirect(process.env.FRONT_URI);
   }
   //*카카오 연결 끊기
   @Get('kakao/withdraw')
@@ -133,11 +133,11 @@ export class AuthController {
   async login(
     @Body() authCredentialDto: AuthCredentialDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<object> {
+  ) {
     const accessToken = await this.authService.login(authCredentialDto);
     res.cookie('jwt', accessToken, { httpOnly: true });
-    // res.redirect(process.env.FRONT_URI);
-    return { message: authMessage.LOGIN_SUCCESS };
+    res.redirect(process.env.FRONT_URI);
+    // return { message: authMessage.LOGIN_SUCCESS };
   }
 
   //*로그 아웃
