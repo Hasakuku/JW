@@ -71,7 +71,7 @@ export class AuthController {
   async kakaoLogin(@Req() req, @Res() res) {
     // console.log(req.user);
     res.cookie('jwt', req.user.token);
-    res.redirect('http://localhost:8080');
+    res.redirect('http://54.79.191.182');
   }
   //* 회원가입
   @Post('/signup')

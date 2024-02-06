@@ -5,10 +5,17 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import * as config from 'config';
 import { Logger } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import * as serveStatic from 'serve-static';
+import { join } from 'path';
 // import { HttpExceptionFilter } from './http-filter/http-filter.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(
+    serveStatic(join(__dirname, '..', 'client'), {
+      index: ['index.html'],
+    }),
+  );
   app.enableCors({
     // origin: '*',
     // credentials: true,
