@@ -136,8 +136,8 @@ export class AuthController {
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
     res.cookie('jwt', accessToken, { httpOnly: true });
-    res.redirect(process.env.FRONT_URI);
-    // return { message: authMessage.LOGIN_SUCCESS };
+    // res.redirect(process.env.FRONT_URI);
+    return { message: authMessage.LOGIN_SUCCESS };
   }
 
   //*로그 아웃
