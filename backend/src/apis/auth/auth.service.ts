@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,12 +16,15 @@ import { SendCodeDto } from './dto/send-code.dto';
 import { EntityManager } from 'typeorm';
 import { AuthCode } from './entities/auth-code.entity';
 import { SocialUserDto } from './dto/social-user.dto';
+import { User } from '../users/entities/user.entity';
+import { HttpService } from '@nestjs/axios';
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
     private entityManager: EntityManager,
+    private httpService: HttpService,
   ) {}
 
   async OAuthLogin(socialUser: SocialUserDto): Promise<any> {
@@ -34,6 +38,61 @@ export class AuthService {
     // const accessToken = await this.jwtService.sign(user);
     // res.cookie('jwt', accessToken, { httpOnly: true });
     // res.redirect('http://localhost:3000');
+  }
+  async kakaoWithdraw(code: string) {
+    const newToken = await this.httpService
+      .post(
+        'https://kauth.kakao.com/oauth/token',
+        `grant_type=authorization_code&client_id=${process.env.KAKAO_CLIENT_ID}&redirect_uri=${process.env.FRONT_URI}/api/v1/auth/kakao/withdraw-callback&code=${code}`,
+        {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+          },
+        },
+      )
+      .toPromise();
+
+    const kakaoToken = newToken.data.access_token;
+
+    const user = await this.httpService
+      .get('https://kapi.kakao.com/v2/user/me', {
+        headers: {
+          Authorization: `Bearer ${kakaoToken}`,
+        },
+      })
+      .toPromise();
+
+    const kakaoId = user.data.id;
+    const kakaoEmail = user.data.kakao_account.email;
+    const checkUser = await this.entityManager.findOneBy(User, {
+      email: kakaoEmail,
+    });
+
+    if (!checkUser) throw new NotFoundException('사용자 정보가 없음');
+
+    const result = await this.httpService
+      .post(
+        'https://kapi.kakao.com/v1/user/unlink',
+        {
+          target_id_type: 'user_id',
+          target_id: kakaoId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${kakaoToken}`,
+          },
+        },
+      )
+      .toPromise();
+
+    if (result.data.id !== kakaoId)
+      throw new InternalServerErrorException('카카오 서버 오류');
+    await this.entityManager.softDelete(User, { email: kakaoEmail });
+    // await this.entityManager.update(
+    // User,
+    // { kakaoId: kakaoId },
+    // { deletedAt: new Date() },
+    // );
   }
 
   //* 회원가입

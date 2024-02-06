@@ -8,11 +8,13 @@ import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from 'src/apis/users/users.module';
 import * as config from 'config';
 import { KakaoStrategy } from './social/kakao.strategy';
+import { HttpModule } from '@nestjs/axios';
 
 const jwtConfig = config.get('jwt');
 
 @Module({
   imports: [
+    HttpModule,
     UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({

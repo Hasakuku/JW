@@ -13,12 +13,12 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   ) {
     super({
       clientID: '3f9afa0045d4d2e28e15fe477c6f683a',
-      callbackURL: 'http://15.164.233.81:3000/api/v1/auth/kakao/login',
+      callbackURL: `http://15.164.233.81:3000/api/v1/auth/kakao/login`,
       clientSecret: '',
       // scope: ['account_email', 'profile_nickname'],
     });
   }
-
+//${process.env.LOCAL_FRONT_URI}
   async validate(
     accessToken: string,
     refreshToken: string,

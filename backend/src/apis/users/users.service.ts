@@ -6,7 +6,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, IsNull, Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { authMessage, userMessage } from 'src/constant/messages/message-type';
 
@@ -20,15 +20,39 @@ export class UserService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<void> {
+    // const { email, password, ...rest } = createUserDto;
+    // const existingUser = await this.entityManager.findOneBy(User, { email });
+    // if (existingUser)
+    //   throw new ConflictException(authMessage.SIGNUP_CONFLICT_EMAIL);
+    // const user = new User();
+    // Object.assign(user, { email, ...rest });
+    // await user.setPassword(password);
+    // console.log(user);
+    // await this.entityManager.save(user);
     const { email, password, ...rest } = createUserDto;
-    const existingUser = await this.entityManager.findOneBy(User, { email });
-    if (existingUser)
-      throw new ConflictException(authMessage.SIGNUP_CONFLICT_EMAIL);
-    const user = new User();
-    Object.assign(user, { email, ...rest });
-    await user.setPassword(password);
-    console.log(user);
-    await this.entityManager.save(user);
+
+    // 기존에 삭제된 사용자를 찾습니다.
+    const deletedUser = await this.entityManager.findOne(User, {
+      where: { email, deleted_at: Not(IsNull()) },
+      withDeleted: true,
+    });
+
+    console.log(email, deletedUser);
+    if (deletedUser) {
+      // 삭제된 사용자를 복구합니다.
+      deletedUser.deleted_at = null;
+      await this.entityManager.save(deletedUser);
+    } else {
+      // 새 사용자를 생성합니다.
+      const existingUser = await this.entityManager.findOneBy(User, { email });
+      if (existingUser)
+        throw new ConflictException(authMessage.SIGNUP_CONFLICT_EMAIL);
+      const user = new User();
+      Object.assign(user, { email, ...rest });
+      await user.setPassword(password);
+      // console.log(user);
+      await this.entityManager.save(user);
+    }
   }
 
   async updateUser(
