@@ -13,8 +13,8 @@ import { authMessage, userMessage } from 'src/constant/messages/message-type';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    // @InjectRepository(User)
+    // private readonly usersRepository: Repository<User>,
     @InjectEntityManager()
     private entityManager: EntityManager,
   ) {}
