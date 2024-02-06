@@ -71,7 +71,7 @@ export class AuthController {
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLogin(@Req() req, @Res() res) {
     // console.log(req.user);
-    res.cookie('jwt', req.user.token);
+    res.cookie('jwt', req.user.token, { httpOnly: true });
     res.redirect(process.env.FRONT_URI);
   }
   //*카카오 연결 끊기
