@@ -136,6 +136,7 @@ export class AuthController {
   ): Promise<object> {
     const accessToken = await this.authService.login(authCredentialDto);
     res.cookie('jwt', accessToken, { httpOnly: true });
+    res.redirect(process.env.FRONT_URI);
     return { message: authMessage.LOGIN_SUCCESS };
   }
 
