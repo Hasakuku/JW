@@ -109,6 +109,7 @@ export class AuthService {
       throw new UnauthorizedException(authMessage.LOGIN_FAILED);
     const payload = { email };
     const accessToken = await this.jwtService.sign(payload);
+    console.log(accessToken)
     return accessToken;
   }
 
