@@ -17,8 +17,8 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    // origin: '*',
-    // credentials: true,
+    origin: 'http://52.62.68.140',
+    credentials: true,
   });
   app.useWebSocketAdapter(new WsAdapter(app));
   app.setGlobalPrefix('api/v1');
