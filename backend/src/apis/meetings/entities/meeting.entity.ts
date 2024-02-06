@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -11,7 +12,6 @@ import {
 } from 'typeorm';
 
 import { InterestCategory, User } from 'src/apis/users/entities/user.entity';
-import { Transform } from 'class-transformer';
 
 @Entity()
 export class Meeting extends BaseEntity {
@@ -40,8 +40,20 @@ export class Meeting extends BaseEntity {
   description: string;
 
   @ManyToMany(() => User)
-  @JoinTable()
-  participants: User[];
+  @JoinTable({
+    name: 'meeting_participants', // Specify the name of the table
+    joinColumn: {
+      name: 'meeting',
+      referencedColumnName: 'meetingId',
+    },
+    //[{ name: "meetingId" }]
+    inverseJoinColumn: {
+      name: 'participant',
+      referencedColumnName: 'userId',
+    },
+    //[{ name: "userId" }]
+  })
+  participants: number[];
 
   @ManyToOne(() => User)
   creator: User;

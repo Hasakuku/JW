@@ -5,14 +5,16 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { InjectEntityManager } from '@nestjs/typeorm';
-import { EntityManager } from 'typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { authMessage, userMessage } from 'src/constant/messages/message-type';
 
 @Injectable()
 export class UserService {
   constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
     @InjectEntityManager()
     private entityManager: EntityManager,
   ) {}
@@ -25,7 +27,7 @@ export class UserService {
     const user = new User();
     Object.assign(user, { email, ...rest });
     await user.setPassword(password);
-    console.log(user)
+    console.log(user);
     await this.entityManager.save(user);
   }
 

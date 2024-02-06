@@ -1,7 +1,7 @@
 db:
-  host: 'pg-lbmrn.vpc-pub-cdb-kr.ntruss.com'
+  host: '3.34.5.249'
   username: 'wonsik'
-  password: 'gpgp84132!'
+  password: 'wonsik'
   synchronize: true
 
 jwt:
