@@ -110,6 +110,7 @@ export class AuthController {
 
   //* 로그인
   @Post('/login')
+  @UseGuards(AuthGuard())
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '이메일 로그인' })
   @ApiBody({
@@ -147,7 +148,8 @@ export class AuthController {
       // secure: true,
     });
     // res.setHeader('Authorization', `Bearer ${accessToken}`);
-    return { message: authMessage.LOGIN_SUCCESS };
+    res.redirect(process.env.FRONT_URI);
+    // return { message: authMessage.LOGIN_SUCCESS };
   }
 
   //*로그 아웃
