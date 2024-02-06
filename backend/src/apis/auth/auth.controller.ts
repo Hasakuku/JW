@@ -74,8 +74,7 @@ export class AuthController {
     res.cookie('jwt', req.user.token, {
       httpOnly: true,
       sameSite: 'none',
-      secure: true,
-      domain: 'http://52.62.68.140',
+      // secure: true,
     });
     res.redirect(process.env.FRONT_URI);
   }
@@ -143,8 +142,7 @@ export class AuthController {
     res.cookie('jwt', accessToken, {
       httpOnly: true,
       sameSite: 'none',
-      secure: true,
-      domain: 'http://52.62.68.140',
+      // secure: true,
     });
     // res.redirect(process.env.FRONT_URI);
     return { message: authMessage.LOGIN_SUCCESS };
