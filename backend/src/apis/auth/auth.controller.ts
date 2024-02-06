@@ -71,12 +71,12 @@ export class AuthController {
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLogin(@Req() req, @Res() res) {
     // console.log(req.user);
-    // res.cookie('jwt', req.user.token, {
-    // httpOnly: true,
-    // sameSite: 'none',
-    // secure: true,
-    // });
-    res.setHeader('Authorization', `Bearer ${req.user.token}`);
+    res.cookie('jwt', req.user.token, {
+      httpOnly: true,
+      // sameSite: 'none',
+      // secure: true,
+    });
+    // res.setHeader('Authorization', `Bearer ${req.user.token}`);
     res.redirect(process.env.FRONT_URI);
   }
   //*카카오 연결 끊기
@@ -140,12 +140,13 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
-    // res.cookie('jwt', accessToken, {
-    //   httpOnly: true,
-    // sameSite: 'none',
-    // secure: true,
-    // });
-    res.setHeader('Authorization', `Bearer ${accessToken}`);
+    res.cookie('jwt', accessToken, {
+      httpOnly: true,
+      domain: 'http://52.62.68.140',
+      // sameSite: 'none',
+      // secure: true,
+    });
+    // res.setHeader('Authorization', `Bearer ${accessToken}`);
     return { message: authMessage.LOGIN_SUCCESS };
   }
 
