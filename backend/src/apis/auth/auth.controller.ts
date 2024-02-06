@@ -148,7 +148,7 @@ export class AuthController {
       // secure: true,
     });
     // res.setHeader('Authorization', `Bearer ${accessToken}`);
-    res.redirect(process.env.FRONT_URI);
+    // res.redirect(process.env.FRONT_URI);
     // return { message: authMessage.LOGIN_SUCCESS };
   }
 
