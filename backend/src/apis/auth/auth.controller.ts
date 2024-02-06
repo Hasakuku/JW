@@ -142,7 +142,7 @@ export class AuthController {
     const accessToken = await this.authService.login(authCredentialDto);
     res.cookie('jwt', accessToken, {
       httpOnly: true,
-      domain: '52.62.68.140',
+      // domain: '52.62.68.140',
       // sameSite: 'none',
       // secure: true,
     });
