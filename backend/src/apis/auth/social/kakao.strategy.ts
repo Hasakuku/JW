@@ -46,7 +46,6 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       email: account._json.kakao_account.email,
       password: String(account.id),
     });
-    console.log(token);
     return { token };
   }
 }

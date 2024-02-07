@@ -41,7 +41,7 @@ export class Meeting extends BaseEntity {
 
   @ManyToMany(() => User)
   @JoinTable({
-    name: 'meeting_participants', // Specify the name of the table
+    name: 'meeting_participants',
     joinColumn: {
       name: 'meeting',
       referencedColumnName: 'meetingId',
