@@ -7,6 +7,7 @@ import {
   Delete,
   Query,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -15,6 +16,7 @@ import { User } from './entities/user.entity';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
 import { ApplicationService } from '../applications/application.service';
 import { Application } from '../applications/entity/application.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -72,7 +74,8 @@ export class UsersController {
   }
 
   //*사용자 신청 현황 조회
-  @Get('/:id/applications')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/applications')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '사용자 신청 현황 조회' })
   @ApiParam({ name: 'id', description: '사용자 ID' })
