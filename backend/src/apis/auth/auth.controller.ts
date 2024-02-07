@@ -109,7 +109,8 @@ export class AuthController {
   }
 
   //* 로그인
-  @Post('/login')
+  // @Post('/login')
+  @Get('/login')
   // @UseGuards(AuthGuard())
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '이메일 로그인' })
