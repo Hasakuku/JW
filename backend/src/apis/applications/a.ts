@@ -1,16 +1,16 @@
 import {
   EntitySubscriberInterface,
   EventSubscriber,
-  UpdateEvent,
+  // UpdateEvent,
 } from 'typeorm';
-import { Apply, ApplyStatus } from './entity/apply.entity';
+import { Application, ApplicationStatus } from './entity/application.entity';
 
 @EventSubscriber()
 export class ApplicationStatusSubscriber
-  implements EntitySubscriberInterface<Apply>
+  implements EntitySubscriberInterface<Application>
 {
   listenTo() {
-    return Apply;
+    return Application;
   }
 
   // async afterUpdate(event: UpdateEvent<Apply>) {

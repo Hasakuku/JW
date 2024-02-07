@@ -8,10 +8,11 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum ApplyStatus {
+export enum ApplicationStatus {
   PENDING = 'pending',
   REJECTED = 'rejected',
   ACCEPTED = 'accepted',
@@ -19,9 +20,10 @@ export enum ApplyStatus {
 }
 
 @Entity()
-export class Apply extends BaseEntity {
+@Unique(['meetingId', 'userId'])
+export class Application extends BaseEntity {
   @PrimaryGeneratedColumn()
-  applyId: number;
+  applicationId: number;
 
   @ManyToOne(() => Meeting)
   @JoinColumn({ name: 'meetingId' })
@@ -31,8 +33,12 @@ export class Apply extends BaseEntity {
   @JoinColumn({ name: 'userId' })
   userId: number;
 
-  @Column({ type: 'enum', enum: ApplyStatus, default: ApplyStatus.PENDING })
-  status: ApplyStatus;
+  @Column({
+    type: 'enum',
+    enum: ApplicationStatus,
+    default: ApplicationStatus.PENDING,
+  })
+  status: ApplicationStatus;
 
   @CreateDateColumn()
   created_at: Date;

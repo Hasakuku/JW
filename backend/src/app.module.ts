@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './apis/users/users.module';
 import { ReportsModule } from './apis/reports/reports.module';
 import { AdminModule } from './apis/admin/admin.module';
+import { ApplicationModule } from './apis/applications/application.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AdminModule } from './apis/admin/admin.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ApplicationModule,
     MeetingsModule,
     AuthModule,
     UsersModule,

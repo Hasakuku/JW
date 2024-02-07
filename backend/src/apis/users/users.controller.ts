@@ -13,10 +13,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
+import { ApplicationService } from '../applications/application.service';
+import { Application } from '../applications/entity/application.entity';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly applicationService: ApplicationService,
+  ) {}
 
   //* 사용자 탈퇴
   @Patch('/withdraw')
@@ -25,7 +30,7 @@ export class UsersController {
     status: 204,
     description: '사용자 탈퇴',
   })
-  withdraw() {}
+  async withdraw() {}
 
   //* 사용자 삭제
   @Delete('/delete')
@@ -34,7 +39,7 @@ export class UsersController {
     status: 204,
     description: '사용자 삭제',
   })
-  deleteUser() {}
+  async deleteUser() {}
 
   //* 이메일 중복 확인
   @Get('check-email')
@@ -66,19 +71,21 @@ export class UsersController {
     return { result };
   }
 
-  //* 사용자 목록 조회
-  @Get()
-  @ApiOperation({ summary: '사용자 목록 조회' })
+  //*사용자 신청 현황 조회
+  @Get('/:id/applications')
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '사용자 신청 현황 조회' })
+  @ApiParam({ name: 'id', description: '사용자 ID' })
   @ApiResponse({
     status: 200,
     description: '사용자 목록 조회',
-    type: Array<User>,
+    type: User,
   })
-  async getUserAll(): Promise<object> {
-    const result = await this.userService.getUserAll();
+  async getUserApplications(@Param('id') userId: number): Promise<object> {
+    const result: Application[] =
+      await this.applicationService.getApplicationsByUserId(userId);
     return { result };
   }
-
   //* 사용자 정보 조회
   @Get('/:id')
   @UseInterceptors(TransformInterceptor)
@@ -96,11 +103,24 @@ export class UsersController {
   //*사용자 정보 수정
   @Patch('/:id')
   @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '사용자 정보 수정' })
   async updateUser(
     @Param('id') userId: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<object> {
     const result = await this.userService.updateUser(userId, updateUserDto);
+    return { result };
+  }
+  //* 사용자 목록 조회
+  @Get()
+  @ApiOperation({ summary: '사용자 목록 조회' })
+  @ApiResponse({
+    status: 200,
+    description: '사용자 목록 조회',
+    type: Array<User>,
+  })
+  async getUserAll(): Promise<object> {
+    const result = await this.userService.getUserAll();
     return { result };
   }
 }
