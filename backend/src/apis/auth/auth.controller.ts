@@ -33,7 +33,7 @@ import {
   CodeSend,
   Login,
 } from 'src/constant/swagger/response-type-success';
-import { authMessage } from 'src/constant/messages/message-type';
+import { authMessage, userMessage } from 'src/constant/messages/message-type';
 import { SendCodeDto } from './dto/send-code.dto';
 import { LoginUnauthorized } from 'src/constant/swagger/response-type-404';
 import { KakaoAuthGuard } from './auth.guard';
@@ -91,7 +91,7 @@ export class AuthController {
     await this.authService.kakaoWithdraw(req.query.code);
     res.cookie('jwt', null, { maxAge: 0 });
     // res.status(204).redirect(process.env.FRONT_URI);
-    res.status(204);
+    res.status(200).json({ message: 'logout' });
   }
   //* 회원가입
   @Post('/signup')
