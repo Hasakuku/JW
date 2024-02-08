@@ -140,8 +140,11 @@ export class AuthController {
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
     res.cookie('jwt', accessToken, { httpOnly: true });
-    res.setHeader('Access-Control-Allow-Origin', 'http://52.62.68.140');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Origin', 'http://52.62.68.140');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept',
+    );
     // res.setHeader('Location', 'http://52.62.68.140');
     res.redirect('http://52.62.68.140/');
   }
