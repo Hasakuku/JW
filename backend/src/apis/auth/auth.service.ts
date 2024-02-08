@@ -43,7 +43,7 @@ export class AuthService {
     const newToken = await this.httpService
       .post(
         'https://kauth.kakao.com/oauth/token',
-        `grant_type=authorization_code&client_id=${process.env.KAKAO_CLIENT_ID}&redirect_uri=${process.env.FRONT_URI}/api/v1/auth/kakao/withdraw-callback&code=${code}`,
+        `grant_type=authorization_code&client_id=${process.env.KAKAO_CLIENT_ID}&redirect_uri=http://15.164.233.81/api/v1/auth/kakao/withdraw-callback&code=${code}`,
         {
           headers: {
             'content-type': 'application/x-www-form-urlencoded',
