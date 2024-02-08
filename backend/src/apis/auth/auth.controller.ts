@@ -68,6 +68,7 @@ export class AuthController {
   //*카카오 로그인 콜백
   @UseGuards(KakaoAuthGuard)
   @Get('kakao/login')
+  @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLogin(@Req() req, @Res() res) {
     // console.log(req.user);
