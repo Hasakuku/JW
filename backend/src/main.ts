@@ -18,7 +18,7 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: 'http://52.62.68.140',
+    origin: 'http://15.164.233.81',
     credentials: true,
   });
   app.useWebSocketAdapter(new WsAdapter(app));
