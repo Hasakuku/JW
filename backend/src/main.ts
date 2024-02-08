@@ -16,12 +16,6 @@ async function bootstrap() {
     serveStatic(join(__dirname, '..', 'client'), {
       index: ['index.html'],
     }),
-    session({
-      secret: 'your session secret',
-      resave: false,
-      saveUninitialized: true,
-      cookie: { secure: false },
-    }),
   );
   app.enableCors({
     origin: 'http://52.62.68.140',

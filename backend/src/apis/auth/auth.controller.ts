@@ -144,8 +144,8 @@ export class AuthController {
     res.cookie('jwt', accessToken, {
       httpOnly: true,
       // domain: '52.62.68.140',
-      // sameSite: 'none',
-      // secure: true,
+      sameSite: 'none',
+      secure: false,
     });
     // res.setHeader('Authorization', `Bearer ${accessToken}`);
     return { message: authMessage.LOGIN_SUCCESS };
