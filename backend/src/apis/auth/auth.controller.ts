@@ -140,7 +140,7 @@ export class AuthController {
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
     res.cookie('jwt', accessToken, { httpOnly: true });
-    res.header('Access-Control-Allow-Origin', 'http://52.62.68.140');
+    res.header('Access-Control-Allow-Origin', 'http://52.62.68.140/');
     res.header(
       'Access-Control-Allow-Headers',
       'Origin, X-Requested-With, Content-Type, Accept',
