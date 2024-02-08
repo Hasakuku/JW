@@ -136,13 +136,13 @@ export class AuthController {
   })
   async login(
     @Body() authCredentialDto: AuthCredentialDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
-    const test = res.cookie('jwt', accessToken, { httpOnly: true });
+    res.cookie('jwt', accessToken, { httpOnly: true });
     // res.setHeader('Authorization', `Bearer ${accessToken}`);
     // return { message: authMessage.LOGIN_SUCCESS };
-    res.send(test);
+    res.status(201).json({ message: authMessage.LOGIN_SUCCESS });
   }
 
   //*로그 아웃
