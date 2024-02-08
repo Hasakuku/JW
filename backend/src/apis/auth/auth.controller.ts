@@ -77,7 +77,7 @@ export class AuthController {
       // secure: true,
     });
     // res.setHeader('Authorization', `Bearer ${req.user.token}`);
-    res.redirect(process.env.FRONT_URI);
+    // res.redirect(process.env.FRONT_URI);
   }
   //*카카오 연결 끊기
   @Get('kakao/withdraw')
@@ -141,12 +141,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
-    res.cookie('jwt', accessToken, {
-      httpOnly: true,
-      // domain: '52.62.68.140',
-      sameSite: 'none',
-      secure: false,
-    });
+    res.cookie('jwt', accessToken, { httpOnly: true });
     // res.setHeader('Authorization', `Bearer ${accessToken}`);
     return { message: authMessage.LOGIN_SUCCESS };
   }
