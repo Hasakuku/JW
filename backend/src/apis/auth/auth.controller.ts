@@ -68,7 +68,7 @@ export class AuthController {
   //*카카오 로그인 콜백
   @UseGuards(KakaoAuthGuard)
   @Get('kakao/login')
-  @UseInterceptors(TransformInterceptor)
+  // @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLogin(@Req() req, @Res() res) {
     // console.log(req.user);
@@ -79,7 +79,7 @@ export class AuthController {
     });
     // res.setHeader('Authorization', `Bearer ${req.user.token}`);
     // res.redirect(process.env.FRONT_URI);
-    return { message: authMessage.LOGIN_SUCCESS };
+    res.status(201).json(authMessage.LOGIN_SUCCESS);
   }
   //*카카오 연결 끊기
   @Get('kakao/withdraw')
