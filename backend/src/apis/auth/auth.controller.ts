@@ -71,14 +71,9 @@ export class AuthController {
   // @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLogin(@Req() req, @Res() res) {
-    // console.log(req.user);
     res.cookie('jwt', req.user.token, {
       httpOnly: true,
-      // sameSite: 'none',
-      // secure: true,
     });
-    // res.setHeader('Authorization', `Bearer ${req.user.token}`);
-    // res.redirect(process.env.FRONT_URI);
     res.status(201).json(authMessage.LOGIN_SUCCESS);
   }
   //*카카오 연결 끊기
@@ -145,7 +140,8 @@ export class AuthController {
     const accessToken = await this.authService.login(authCredentialDto);
     res.cookie('jwt', accessToken, { httpOnly: true });
     // res.setHeader('Authorization', `Bearer ${accessToken}`);
-    return { message: authMessage.LOGIN_SUCCESS };
+    // return { message: authMessage.LOGIN_SUCCESS };
+    res.send({ accessToken });
   }
 
   //*로그 아웃
