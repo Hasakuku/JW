@@ -139,7 +139,8 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
-    res.cookie('jwt', accessToken, { httpOnly: true, domain: '52.62.68.140' });
+    res.cookie('jwt', accessToken, { httpOnly: true });
+    res.setHeader('Location', 'http://52.62.68.140');
     // res.setHeader('Authorization', `Bearer ${accessToken}`);
     // return { message: authMessage.LOGIN_SUCCESS };
     res.status(201).json({ message: authMessage.LOGIN_SUCCESS });
