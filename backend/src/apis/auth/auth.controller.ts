@@ -74,7 +74,9 @@ export class AuthController {
     res.cookie('jwt', req.user.token, {
       httpOnly: true,
     });
-    res.status(201).json(authMessage.LOGIN_SUCCESS);
+    // res.status(201).json(authMessage.LOGIN_SUCCESS);
+    console.log(res)
+    res.redirect(process.env.FRONT_URI);
   }
   //*카카오 연결 끊기
   @Get('kakao/withdraw')
