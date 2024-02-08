@@ -78,7 +78,7 @@ export class AuthController {
     });
     // res.setHeader('Authorization', `Bearer ${req.user.token}`);
     // res.redirect(process.env.FRONT_URI);
-    res.status(201).json('ok');
+    return { message: authMessage.LOGIN_SUCCESS };
   }
   //*카카오 연결 끊기
   @Get('kakao/withdraw')
