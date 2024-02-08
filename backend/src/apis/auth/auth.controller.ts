@@ -90,7 +90,8 @@ export class AuthController {
   async kakaoWithdrawCallback(@Req() req, @Res() res) {
     await this.authService.kakaoWithdraw(req.query.code);
     res.cookie('jwt', null, { maxAge: 0 });
-    res.status(204).redirect(process.env.FRONT_URI);
+    // res.status(204).redirect(process.env.FRONT_URI);
+    res.status(204);
   }
   //* 회원가입
   @Post('/signup')
@@ -138,10 +139,10 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
-    res.cookie('jwt', accessToken, { httpOnly: true });
+    const test = res.cookie('jwt', accessToken, { httpOnly: true });
     // res.setHeader('Authorization', `Bearer ${accessToken}`);
     // return { message: authMessage.LOGIN_SUCCESS };
-    res.send({ accessToken });
+    res.send(test);
   }
 
   //*로그 아웃
