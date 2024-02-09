@@ -8,21 +8,23 @@ import {
   Query,
   UseInterceptors,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
 import { ParticipantService } from '../participants/participant.service';
 import { Participant } from '../participants/entity/participant.entity';
 import { AuthGuard } from '@nestjs/passport';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly userService: UserService,
-    private readonly applicationService: ParticipantService,
+    private readonly participantService: ParticipantService,
   ) {}
 
   //* 사용자 탈퇴
@@ -75,44 +77,59 @@ export class UsersController {
 
   //*사용자 신청 현황 조회
   @UseGuards(AuthGuard('jwt'))
-  @Get('/applications')
+  @Get('/participants')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '사용자 신청 현황 조회' })
-  @ApiParam({ name: 'id', description: '사용자 ID' })
   @ApiResponse({
     status: 200,
-    description: '사용자 목록 조회',
-    type: User,
+    description: '사용자 신청 현황 조회',
   })
-  async getUserApplications(@Param('id') userId: number): Promise<object> {
+  async getUserParticipants(@Req() req): Promise<object> {
     const result: Participant[] =
-      await this.applicationService.getParticipantsByUserId(userId);
+      await this.participantService.getParticipantsByUserId(req.user.userId);
+    return { result };
+  }
+
+  //*사용자 참가 모임 조회
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/meetings')
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '사용자 참가 모임 조회' })
+  @ApiResponse({
+    status: 200,
+    description: '사용자 참가 모임 조회',
+  })
+  async getUserMeetings(@Req() req): Promise<object> {
+    const result: Participant[] =
+      await this.participantService.getMeetingsByUserId(req.user.userId);
     return { result };
   }
   //* 사용자 정보 조회
-  @Get('/:id')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/profile')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '사용자 정보 조회' })
-  @ApiParam({ name: 'id', description: '사용자 ID' })
   @ApiResponse({
     status: 200,
-    description: '사용자 목록 조회',
+    description: '사용자 정보 조회 성공',
     type: User,
   })
-  async getUser(@Param('id') userId: number): Promise<User> {
-    return await this.userService.getUserById(userId);
+  async getUser(@Req() req): Promise<object> {
+    const result = await this.userService.getUserById(req.user.userId);
+    return { result };
   }
 
   //*사용자 정보 수정
-  @Patch('/:id')
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('/profile')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '사용자 정보 수정' })
   async updateUser(
-    @Param('id') userId: number,
+    @Req() req,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<object> {
-    const result = await this.userService.updateUser(userId, updateUserDto);
-    return { result };
+    await this.userService.updateUser(req.user.userId, updateUserDto);
+    return { message: '수정 성공' };
   }
   //* 사용자 목록 조회
   @Get()

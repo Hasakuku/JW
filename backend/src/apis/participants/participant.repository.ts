@@ -13,31 +13,28 @@ export class ParticipantRepository extends Repository<Participant> {
     createParticipantDto: CreateParticipantDto,
   ): Promise<Participant> {
     const participant = this.create(createParticipantDto);
-    return this.save(participant);
+    return await this.save(participant);
   }
 
   async getParticipantById(participantId: number): Promise<Participant> {
-    return this.findOne({ where: { participantId } });
+    return await this.findOne({ where: { participantId } });
   }
 
-  async getParticipantByUserId(
-    userId: number,
-  ): Promise<Participant | undefined> {
-    return this.findOne({ where: { userId } });
+  async getParticipantByUserId(userId: number): Promise<Participant[]> {
+    return await this.find({ where: { userId } });
   }
 
   async getParticipantByMeetingId(
     meetingId: number,
   ): Promise<Participant | undefined> {
-    return this.findOne({ where: { meetingId } });
+    return await this.findOne({ where: { meetingId } });
   }
 
   async updateParticipant(
     participantId: number,
     status: Partial<Participant>,
-  ): Promise<Participant> {
-    await this.update(participantId, status);
-    return this.findOne({ where: { participantId } });
+  ): Promise<object> {
+    return await this.update(participantId, status);
   }
 
   async deleteParticipant(participantId: number): Promise<void> {

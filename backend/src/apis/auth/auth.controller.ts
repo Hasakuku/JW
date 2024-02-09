@@ -111,19 +111,7 @@ export class AuthController {
   // @UseGuards(AuthGuard())
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '이메일 로그인' })
-  @ApiBody({
-    type: AuthCredentialDto,
-    description: '사용자 로그인 정보',
-    examples: {
-      '이메일 로그인': {
-        summary: '이메일 로그인',
-        value: {
-          email: 'user@test.com',
-          password: '123456',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: AuthCredentialDto })
   @ApiResponse({
     status: 201,
     description: '사용자 로그인 (쿠키에 jwt 토큰 생성)',

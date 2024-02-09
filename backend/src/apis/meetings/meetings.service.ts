@@ -38,6 +38,13 @@ export class MeetingsService {
     }
   }
 
+  async getMeetingById(meetingId: number): Promise<Meeting> {
+    return await this.entityManager.findOne(Meeting, {
+      where: { meetingId },
+      // relations: ['participants'],
+    });
+  }
+
   // async createBoards(createBoardDto: CreateBoardDto): Promise<Board> {
   //   const { title, description } = createBoardDto;
 

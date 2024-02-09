@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import * as crypto from 'crypto';
+import { Participant } from 'src/apis/participants/entity/participant.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   // PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -73,6 +75,10 @@ export class User extends BaseEntity {
   // @IsEnum(InterestCategory, { each: true })
   @Column('simple-array')
   interestCategory: InterestCategory[];
+
+  @ApiProperty()
+  @OneToMany(() => Participant, (participant) => participant.userId)
+  participants: Participant[];
 
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;

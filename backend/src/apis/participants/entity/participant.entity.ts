@@ -8,13 +8,13 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
 export enum ParticipantStatus {
   PENDING = 'pending', // 응답을 기다리는 상태
-  ACCEPTED = 'accepted', // 초대를 수락한 상태
   REJECTED = 'rejected', // 초대를 거부한 상태
   CANCELED = 'canceled', // 초대를 수락한 후 취소한 상태
   ATTENDED = 'attended', // 모임에 참석한 상태
@@ -28,10 +28,12 @@ export class Participant extends BaseEntity {
 
   @ManyToOne(() => Meeting)
   @JoinColumn({ name: 'meetingId' })
+  @RelationId((participant: Participant) => participant.meetingId)
   meetingId: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
+  // @RelationId((participant: Participant) => participant.userId)
   userId: number;
 
   @Column({
