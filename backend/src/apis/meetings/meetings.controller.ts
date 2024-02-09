@@ -78,6 +78,9 @@ export class MeetingsController {
   //   return this.boardsService.createBoards(createBoardDto);
   // }
   @Get('/:id')
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '모임 상세 조회' })
+  @ApiParam({ name: 'id', required: true, example: 1 })
   async getMeetingById(@Param('id', ParseIntPipe) id): Promise<object> {
     const result = await this.meetingsService.getMeetingById(id);
     return { result };
