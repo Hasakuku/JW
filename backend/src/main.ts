@@ -7,7 +7,6 @@ import { Logger } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as serveStatic from 'serve-static';
 import { join } from 'path';
-import * as session from 'express-session';
 // import { HttpExceptionFilter } from './http-filter/http-filter.filter';
 
 async function bootstrap() {

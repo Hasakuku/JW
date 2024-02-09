@@ -7,21 +7,27 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApplicationService } from './application.service';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Application } from './entity/application.entity';
-import { CreateApplicationDto } from './dto/create-application.dto';
+import { ParticipantService } from './participant.service';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Participant } from './entity/participant.entity';
+import { CreateParticipantDto } from './dto/create-participant.dto';
 
-@ApiTags('Applications')
-@Controller('applications')
-export class ApplicationController {
-  constructor(private applicationService: ApplicationService) {}
+@ApiTags('Participants')
+@Controller('participants')
+export class ParticipantController {
+  constructor(private participantService: ParticipantService) {}
 
   @Post()
   @ApiOperation({ summary: '신청 생성' })
-  @ApiBody({ description: '신청 생성', type: CreateApplicationDto })
-  async create(@Body() application: Application): Promise<Application> {
-    return this.applicationService.createApplication(application);
+  @ApiBody({ description: '신청 생성', type: CreateParticipantDto })
+  async create(@Body() participant: Participant): Promise<Participant> {
+    return this.participantService.createParticipant(participant);
   }
 
   @Get(':id')
@@ -32,8 +38,8 @@ export class ApplicationController {
     description: '신청 조회 ID',
     example: 1,
   })
-  async findOne(@Param('id') id: number): Promise<Application | undefined> {
-    return this.applicationService.getApplicationById(id);
+  async findOne(@Param('id') id: number): Promise<Participant[]> {
+    return this.participantService.getParticipantsByUserId(id);
   }
 
   @Put(':id')
@@ -46,7 +52,7 @@ export class ApplicationController {
   })
   @ApiBody({
     description: '변경할 신청의 정보',
-    type: Application,
+    type: Participant,
     examples: {
       수락: {
         summary: '신청 수락',
@@ -58,9 +64,9 @@ export class ApplicationController {
   })
   async update(
     @Param('id') id: number,
-    @Body() updatedApplication: Partial<Application>,
-  ): Promise<Application> {
-    return this.applicationService.updateApplication(id, updatedApplication);
+    @Body() updatedParticipant: Partial<Participant>,
+  ): Promise<Participant> {
+    return this.participantService.updateParticipant(id, updatedParticipant);
   }
 
   @Delete(':id')
@@ -74,6 +80,6 @@ export class ApplicationController {
     description: '서버 오류',
   })
   async delete(@Param('id') id: number): Promise<void> {
-    await this.applicationService.deleteApplication(id);
+    await this.participantService.deleteParticipant(id);
   }
 }

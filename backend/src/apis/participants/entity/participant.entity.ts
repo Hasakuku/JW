@@ -12,18 +12,19 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum ApplicationStatus {
-  PENDING = 'pending',
-  REJECTED = 'rejected',
-  ACCEPTED = 'accepted',
-  CANCELED = 'canceled',
+export enum ParticipantStatus {
+  PENDING = 'pending', // 응답을 기다리는 상태
+  ACCEPTED = 'accepted', // 초대를 수락한 상태
+  REJECTED = 'rejected', // 초대를 거부한 상태
+  CANCELED = 'canceled', // 초대를 수락한 후 취소한 상태
+  ATTENDED = 'attended', // 모임에 참석한 상태
 }
 
 @Entity()
 @Unique(['meetingId', 'userId'])
-export class Application extends BaseEntity {
+export class Participant extends BaseEntity {
   @PrimaryGeneratedColumn()
-  applicationId: number;
+  participantId: number;
 
   @ManyToOne(() => Meeting)
   @JoinColumn({ name: 'meetingId' })
@@ -35,10 +36,10 @@ export class Application extends BaseEntity {
 
   @Column({
     type: 'enum',
-    enum: ApplicationStatus,
-    default: ApplicationStatus.PENDING,
+    enum: ParticipantStatus,
+    default: ParticipantStatus.PENDING,
   })
-  status: ApplicationStatus;
+  status: ParticipantStatus;
 
   @CreateDateColumn()
   created_at: Date;

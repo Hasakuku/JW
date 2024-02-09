@@ -81,8 +81,7 @@ export class AuthController {
   @Get('kakao/withdraw')
   @ApiOperation({ summary: '카카오 탈퇴 페이지 리다이렉트(프론트 요청URI)' })
   async kakaoWithdraw(@Res() res): Promise<void> {
-    const url =
-      'https://kauth.kakao.com/oauth/authorize?client_id=3f9afa0045d4d2e28e15fe477c6f683a&redirect_uri=http://15.164.233.81/api/v1/auth/kakao/withdraw-callback&response_type=code';
+    const url = process.env.KAKAO_WITHDRAW_URI;
     res.redirect(url);
   }
   //*카카오 연결 끊기 콜백

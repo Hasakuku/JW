@@ -1,8 +1,8 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { ApplicationStatus } from '../entity/application.entity';
+import { ParticipantStatus } from '../entity/participant.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateApplicationDto {
+export class CreateParticipantDto {
   @ApiProperty({ example: 1 })
   @IsNotEmpty()
   meetingId: number;
@@ -12,6 +12,6 @@ export class CreateApplicationDto {
   userId: number;
 
   @ApiProperty({ example: 'pending' })
-  @IsEnum(ApplicationStatus)
-  status?: ApplicationStatus;
+  @IsEnum(ParticipantStatus)
+  status?: ParticipantStatus;
 }

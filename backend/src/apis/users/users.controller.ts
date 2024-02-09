@@ -14,15 +14,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
-import { ApplicationService } from '../applications/application.service';
-import { Application } from '../applications/entity/application.entity';
+import { ParticipantService } from '../participants/participant.service';
+import { Participant } from '../participants/entity/participant.entity';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly userService: UserService,
-    private readonly applicationService: ApplicationService,
+    private readonly applicationService: ParticipantService,
   ) {}
 
   //* 사용자 탈퇴
@@ -85,8 +85,8 @@ export class UsersController {
     type: User,
   })
   async getUserApplications(@Param('id') userId: number): Promise<object> {
-    const result: Application[] =
-      await this.applicationService.getApplicationsByUserId(userId);
+    const result: Participant[] =
+      await this.applicationService.getParticipantsByUserId(userId);
     return { result };
   }
   //* 사용자 정보 조회
