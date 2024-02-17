@@ -1,7 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsString, IsDate, IsEnum, IsInt, IsNotEmpty } from 'class-validator';
-import { InterestCategory, User } from 'src/apis/users/entities/user.entity';
+import {
+  IsString,
+  IsDate,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  isArray,
+  IsArray,
+} from 'class-validator';
+import { InterestCategory } from 'src/apis/users/entities/user.entity';
+import { formatDate } from 'src/constant/formDate';
 
 export class CreateMeetingDto {
   @ApiProperty({ example: '테스트2' })
@@ -19,16 +28,21 @@ export class CreateMeetingDto {
   @IsString()
   location: string;
 
-  @ApiProperty({ example: '2024-02-08' })
+  @ApiProperty({ example: 'image.png' })
+  @IsNotEmpty()
+  @IsString()
+  image: string;
+
+  @ApiProperty({ example: formatDate(new Date()) })
   @IsNotEmpty()
   @IsDate()
   @Transform(({ value }) => new Date(value))
-  period: Date;
+  meeting_date: Date;
 
-  @ApiProperty({ example: 'culture' })
+  @ApiProperty({ example: ['culture', 'food'] })
   @IsNotEmpty()
-  @IsEnum(InterestCategory)
-  category: InterestCategory;
+  @IsEnum(InterestCategory, { each: true })
+  category: InterestCategory[];
 
   @ApiProperty({ example: 10 })
   @IsNotEmpty()

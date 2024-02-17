@@ -113,7 +113,7 @@ export class ParticipantService {
       .select([
         'participant.participantId AS participantId',
         'participant.status AS status',
-        'user.userId  AS userId',
+        'user.userId AS userId',
       ])
       .leftJoin('participant.userId', 'user')
       .where('participant.meetingId = :meetingId', { meetingId })

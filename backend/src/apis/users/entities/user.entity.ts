@@ -4,6 +4,7 @@ import * as crypto from 'crypto';
 import { Participant } from 'src/apis/participants/entity/participant.entity';
 import {
   BaseEntity,
+  BeforeInsert,
   Column,
   CreateDateColumn,
   DeleteDateColumn,

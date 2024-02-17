@@ -4,7 +4,6 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -25,11 +24,14 @@ export class Meeting extends BaseEntity {
   @Column({ length: 50 })
   tag: string;
 
+  @Column()
+  image: string;
+
   @Column({ length: 50 })
   location: string;
 
   @Column('date')
-  period: Date;
+  meeting_date: Date;
 
   @Column('simple-array')
   category: InterestCategory[];

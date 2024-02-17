@@ -1,34 +1,36 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
-import { InjectEntityManager } from '@nestjs/typeorm';
-import { EntityManager } from 'typeorm';
 import { Meeting } from './entities/meeting.entity';
+import { MeetingRepository } from './meetings.repository';
+import { Sort } from './dto/get-meeting.dto';
+import { InterestCategory } from '../users/entities/user.entity';
 
 @Injectable()
 export class MeetingsService {
-  constructor(
-    @InjectEntityManager()
-    private entityManager: EntityManager,
-  ) {}
+  constructor(private meetingRepository: MeetingRepository) {}
 
   async createMeetings(createMeetingDto: CreateMeetingDto): Promise<Meeting> {
     const {
       title,
       tag,
       location,
-      period,
+      meeting_date,
       category,
       member_limit,
       description,
     } = createMeetingDto;
     try {
-      const result = await this.entityManager.query(
-        `INSERT INTO meeting (title, tag, location, period, category, member_limit, description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-        [title, tag, location, period, category, member_limit, description],
+      const result = await this.meetingRepository.query(
+        `INSERT INTO meeting (title, tag, location, meeting_date, category, member_limit, description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        [
+          title,
+          tag,
+          location,
+          meeting_date,
+          category,
+          member_limit,
+          description,
+        ],
       );
 
       return result;
@@ -36,61 +38,99 @@ export class MeetingsService {
       console.error(error);
       throw new InternalServerErrorException();
     }
+    // const meeting = new Meeting();
+    // const meeting = await this.meetingRepository.create(createMeetingDto);
+    // Object.assign(meeting, createMeetingDto);
+    // return await this.meetingRepository.save(meeting);
   }
 
   async getMeetingById(meetingId: number): Promise<Meeting> {
-    return await this.entityManager.findOne(Meeting, {
+    return await this.meetingRepository.findOne({
       where: { meetingId },
       // relations: ['participants'],
     });
   }
+  // async getMeetings1(
+  //   category,
+  //   keyword,
+  //   member_limit,
+  //   date,
+  //   location,
+  // ): Promise<any> {
+  //   const query = await this.meetingRepository
+  //     .createQueryBuilder('meetings')
+  //     .where('meeting.category = :category', { category })
+  //     .andWhere('meeting.title LIKE :keyword', { keyword: `%${keyword}%` })
+  //     .andWhere('meeting.member_limit <= :member_limit', { member_limit })
+  //     .andWhere('meeting.meeting_date >= :date', { date })
+  //     .andWhere('meeting.location = :location', { location });
 
-  // async createBoards(createBoardDto: CreateBoardDto): Promise<Board> {
-  //   const { title, description } = createBoardDto;
-
-  //   const result = await this.entityManager.query(
-  //     `INSERT INTO board (title, description, status) VALUES ($1, $2, $3) RETURNING *`,
-  //     [title, description, BoardStatus.PUBLIC],
-  //   );
-
-  //   return result[0];
+  //   const meetings = await query.getMany();
+  //   return meetings;
   // }
 
-  // async getBoardById(id: number): Promise<Board> {
-  //   const result = await this.entityManager.query(
-  //     `SELECT * FROM board WHERE id = $1`,
-  //     [id],
-  //   );
+  async getMeetings({
+    keyword,
+    category = InterestCategory.DEFAULT,
+    member_min = 0,
+    member_max = 100,
+    date_start = new Date(),
+    date_end = new Date(),
+    location,
+    sort = Sort.DEFAULT,
+    perPage = 9,
+    cursorId = 1,
+    cursorValue = 0,
+  }): Promise<Meeting[]> {
+    let query = await this.meetingRepository
+      .createQueryBuilder('meeting')
+      .leftJoin('meeting.userId', 'user')
+      .where(
+        'meeting.title LIKE :keyword OR meeting.description LIKE :keyword OR user.username LIKE :keyword',
+        { keyword: `%${keyword}%` },
+      )
+      .andWhere('meeting.member_limit BETWEEN :member_min AND :member_max', {
+        member_min,
+        member_max,
+      })
+      .andWhere('meeting.meeting_date BETWEEN :date_start AND :date_end', {
+        date_start,
+        date_end,
+      })
+      .andWhere('meeting.location Like :location', { location });
 
-  //   if (result.length === 0)
-  //     throw new NotFoundException(`Can't find Board with id: ${id}`);
+    if (category !== InterestCategory.DEFAULT) {
+      query = query.andWhere('meeting.category Like :category', { category });
+    }
 
-  //   return result[0];
-  // }
+    if (cursorId && cursorValue) {
+      query = query.andWhere('meeting.meetingId < :cursorId', { cursorId });
+    }
 
-  // async deleteBoard(id: number): Promise<void> {
-  //   const result = await this.entityManager.query(
-  //     `DELETE FROM board WHERE id = $1 RETURNING *`,
-  //     [id],
-  //   );
+    switch (sort) {
+      case Sort.CURRENT:
+        query = query.orderBy('meeting.created_at', 'DESC');
+        break;
+      // case Sort.COUNT:
+      // query = query.orderBy('meeting.participants.length', 'DESC');
+      // break;
+      default:
+        query = query.orderBy('meeting.meetingId', 'ASC');
+    }
 
-  //   if (result.length === 0)
-  //     throw new NotFoundException(`Can't find Board with id: ${id}`);
-  // }
+    query = query.select([
+      'meeting.meetingId',
+      'meeting.meeting_date',
+      'meeting.tag',
+      'meeting.title',
+      'meeting.member_limit',
+      'meeting.created_at',
+      'meeting.image',
+      'user.username',
+    ]);
 
-  // async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
-  //   const board = await this.getBoardById(id);
+    const meetings = await query.take(perPage).getMany();
 
-  //   const result = await this.entityManager.query(
-  //     `UPDATE board SET status = $1 WHERE id = $2 RETURNING *`,
-  //     [status, id],
-  //   );
-
-  //   return result[0];
-  // }
-
-  // async getAllBoards(): Promise<Board[]> {
-  //   const result = await this.entityManager.query(`SELECT * FROM board`);
-  //   return result;
-  // }
+    return meetings;
+  }
 }

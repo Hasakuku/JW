@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -19,11 +20,13 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { ParticipantService } from '../participants/participant.service';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
+import { GetMeetingsDto } from './dto/get-meeting.dto';
 
 @ApiTags('Meetings')
 @Controller('meetings')
@@ -100,4 +103,12 @@ export class MeetingsController {
   // getAllBoards(): Promise<Board[]> {
   //   return this.boardsService.getAllBoards();
   // }
+  @Get()
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '모임 조회' })
+  // @ApiQuery({ type: GetMeetingsDto })
+  async getMeetings(@Query() getMeetingsDto: GetMeetingsDto): Promise<object> {
+    const result = await this.meetingsService.getMeetings(getMeetingsDto);
+    return { result };
+  }
 }
