@@ -125,7 +125,7 @@ export class MeetingsService {
       'meeting.title',
       'meeting.member_limit',
       'meeting.created_at',
-      'meeting.image',
+      // 'meeting.image',
       'user.username',
     ]);
 
