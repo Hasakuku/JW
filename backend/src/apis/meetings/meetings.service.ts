@@ -183,7 +183,7 @@ export class MeetingsService {
       const isLiked = meeting.users.some(
         (meetingUser) => meetingUser.userId === user.userId,
       );
-      const creator = {
+      const host = {
         userId: meeting.user.userId,
         username: meeting.user.username,
         profileImage: meeting.user.profileImage,
@@ -198,7 +198,7 @@ export class MeetingsService {
         meeting_date: meeting.meeting_date,
         member_limit: meeting.member_limit,
         created_at: meeting.created_at,
-        creator,
+        host,
         participants_number: meeting.participants.length,
         isLiked,
         isActivated,

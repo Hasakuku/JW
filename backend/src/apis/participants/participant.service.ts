@@ -124,7 +124,7 @@ export class ParticipantService {
         'participant.status AS status',
         'user.userId AS userId',
       ])
-      .leftJoin('participant.userId', 'user')
+      .leftJoin('participant.user', 'user')
       .where('participant.meetingId = :meetingId', { meetingId })
       .getRawMany();
   }
