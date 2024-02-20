@@ -145,6 +145,18 @@ export class UsersController {
     await this.userService.updateUser(req.user.userId, updateUserDto);
     return { message: '수정 성공' };
   }
+
+  //* 사용자 좋아요 목록 조회
+  @UseGuards(AuthGuard('jwt'))
+  @Get('likes')
+  // @UsePipes(ValidationPipe)
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '좋아요 목록 조회' })
+  async getLikes(@Req() req): Promise<object> {
+    const result = await this.userService.getLikes(req.user.userId);
+    return { result };
+  }
+
   //* 사용자 목록 조회
   @Get()
   @ApiOperation({ summary: '사용자 목록 조회' })

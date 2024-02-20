@@ -31,6 +31,8 @@ import { TransformInterceptor } from 'src/common/interceptors/response-type.inte
 import { GetMeetingsDto } from './dto/get-meeting.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetMeetingsPipe } from './pipes/getMeetings.pipe';
+import { UserService } from '../users/users.service';
+import { verify } from 'jsonwebtoken';
 
 @ApiTags('Meetings')
 @Controller('meetings')
@@ -38,6 +40,7 @@ export class MeetingsController {
   constructor(
     private meetingsService: MeetingsService,
     private participantService: ParticipantService,
+    private userService: UserService,
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
@@ -58,6 +61,34 @@ export class MeetingsController {
     const user = req.user;
     await this.meetingsService.createMeetings(user, createMeetingDto);
     return { message: '모임생성 성공' };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/:id/like')
+  @UsePipes(ValidationPipe)
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '좋아요 추가' })
+  @ApiParam({ name: 'id', required: true, example: 1 })
+  async addLike(
+    @Req() req,
+    @Param('meetingId') meetingId: number,
+  ): Promise<object> {
+    await this.userService.addLike(req.user.userId, meetingId);
+    return { message: '좋아요 추가 성공' };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/:id/like')
+  @UsePipes(ValidationPipe)
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '좋아요 삭제' })
+  @ApiParam({ name: 'id', required: true, example: 1 })
+  async removeLike(
+    @Req() req,
+    @Param('meetingId') meetingId: number,
+  ): Promise<object> {
+    await this.userService.removeLike(req.user.userId, meetingId);
+    return { message: '좋아요 삭제 성공' };
   }
 
   @Get(':id/participants')
@@ -107,8 +138,17 @@ export class MeetingsController {
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임 상세 조회' })
   @ApiParam({ name: 'id', required: true, example: 1 })
-  async getMeetingById(@Param('id', ParseIntPipe) id): Promise<object> {
-    const result = await this.meetingsService.getMeetingById(id);
+  async getMeetingById(
+    @Param('id', ParseIntPipe) id,
+    @Req() req,
+  ): Promise<object> {
+    let user;
+    const token = req.cookies['jwt'];
+
+    if (token) {
+      user = verify(token, process.env.JWT_SECRET);
+    }
+    const result = await this.meetingsService.getMeetingById(id, user);
     return { result };
   }
   // @Delete('/:id')
@@ -135,10 +175,13 @@ export class MeetingsController {
     @Query(GetMeetingsPipe)
     getMeetingsDto: GetMeetingsDto,
   ): Promise<object> {
-    const result = await this.meetingsService.getMeetings(
-      getMeetingsDto,
-      req.user,
-    );
+    let user;
+    const token = req.cookies['jwt'];
+
+    if (token) {
+      user = verify(token, process.env.JWT_SECRET);
+    }
+    const result = await this.meetingsService.getMeetings(getMeetingsDto, user);
     return { result };
   }
 }

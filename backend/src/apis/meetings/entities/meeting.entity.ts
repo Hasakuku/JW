@@ -63,7 +63,7 @@ export class Meeting extends BaseEntity {
     joinColumn: { name: 'userId' },
     inverseJoinColumn: { name: 'meetingId' },
   })
-  users?: User[];
+  likes?: User[];
 
   @CreateDateColumn()
   created_at: Date;

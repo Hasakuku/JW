@@ -11,6 +11,7 @@ import { UserRepository } from './users.repository';
 import { CategoryRepository } from '../categories/categories.repository';
 import { In } from 'typeorm';
 import { MeetingRepository } from '../meetings/meetings.repository';
+import { Meeting } from '../meetings/entities/meeting.entity';
 
 @Injectable()
 export class UserService {
@@ -121,5 +122,36 @@ export class UserService {
       relations: ['meetings'],
     });
     return getUser.meetings;
+  }
+
+  async addLike(userId: number, meetingId: number): Promise<void> {
+    const user = await this.usersRepository.findOne({
+      where: { userId },
+      relations: ['likes'],
+    });
+    const meeting = await this.meetingRepository.findOneBy({ meetingId });
+    if (!user.likes) {
+      user.likes = [meeting];
+    } else if (!user.likes.find((like) => like.meetingId === meetingId)) {
+      user.likes.push(meeting);
+    }
+    await this.usersRepository.save(user);
+  }
+
+  async removeLike(userId: number, meetingId: number): Promise<void> {
+    const user = await this.usersRepository.findOne({
+      where: { userId },
+      relations: ['likes'],
+    });
+    user.likes = user.likes.filter((like) => like.meetingId !== meetingId);
+    await this.usersRepository.save(user);
+  }
+
+  async getLikes(userId: number): Promise<Meeting[]> {
+    const user = await this.usersRepository.findOne({
+      where: { userId },
+      relations: ['likes'],
+    });
+    return user.likes;
   }
 }

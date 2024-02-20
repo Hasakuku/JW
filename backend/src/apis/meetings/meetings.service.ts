@@ -12,7 +12,22 @@ import { User } from '../users/entities/user.entity';
 import { CategoryRepository } from '../categories/categories.repository';
 import { ParticipantService } from '../participants/participant.service';
 import { ParticipantRepository } from '../participants/participant.repository';
+import { Category } from '../categories/entity/categories.entity';
 
+interface MeetingResponse {
+  meetingId: number;
+  title: string;
+  categories: Category[]; // 카테고리의 타입이 무엇인지에 따라 변경될 수 있습니다.
+  image: string;
+  description: string;
+  location: string;
+  meeting_date: Date;
+  member_limit: number;
+  created_at: Date;
+  host: User; // 'User'는 사용자 정보를 담는 타입입니다. 실제 사용자 정보의 형태에 따라 변경될 수 있습니다.
+  participants_number: number;
+  isLiked: boolean;
+}
 @Injectable()
 export class MeetingsService {
   constructor(
@@ -38,10 +53,13 @@ export class MeetingsService {
     return await this.meetingRepository.save(meeting);
   }
 
-  async getMeetingById(meetingId: number): Promise<Meeting> {
-    const meetings = await this.meetingRepository.findOne({
+  async getMeetingById(
+    meetingId: number,
+    user?: User,
+  ): Promise<MeetingResponse> {
+    const meeting = await this.meetingRepository.findOne({
       where: { meetingId },
-      relations: ['categories', 'user'],
+      relations: ['categories', 'user', 'likes'],
     });
     const participants = await this.participantRepository
       .createQueryBuilder('participant')
@@ -58,8 +76,26 @@ export class MeetingsService {
       })
       .getRawMany();
 
-    meetings.participants = participants;
-    return meetings;
+    const isLiked = meeting.likes.some(
+      (meetingUser) => meetingUser.userId === user.userId,
+    );
+
+    meeting.participants = participants;
+    const result: MeetingResponse = {
+      meetingId: meeting.meetingId,
+      title: meeting.title,
+      categories: meeting.categories,
+      image: meeting.image,
+      description: meeting.description,
+      location: meeting.location,
+      meeting_date: meeting.meeting_date,
+      member_limit: meeting.member_limit,
+      created_at: meeting.created_at,
+      host: meeting.user,
+      participants_number: meeting.participants.length,
+      isLiked,
+    };
+    return result;
   }
 
   async getMeetingDetailByHost(
@@ -88,9 +124,8 @@ export class MeetingsService {
       sort,
       perPage,
       cursorId,
-      cursorValue,
     }: GetMeetingsDto,
-    user: User,
+    user?: User,
   ) {
     let query = this.meetingRepository
       .createQueryBuilder('meeting')
@@ -101,7 +136,7 @@ export class MeetingsService {
         'participant.status = :status',
         { status: 'attended' },
       )
-      .leftJoinAndSelect('meeting.users', 'users')
+      .leftJoinAndSelect('meeting.likes', 'likes')
       .leftJoinAndSelect('meeting.categories', 'categories')
       .andWhere(`(meeting.member_limit BETWEEN :member_min AND :member_max)`, {
         member_min,
@@ -180,7 +215,7 @@ export class MeetingsService {
           meetingDate.getMonth() === now.getMonth() &&
           meetingDate.getDate() < now.getDate())
       );
-      const isLiked = meeting.users.some(
+      const isLiked = meeting.likes.some(
         (meetingUser) => meetingUser.userId === user.userId,
       );
       const host = {
@@ -204,6 +239,7 @@ export class MeetingsService {
         isActivated,
       };
     });
+    console.log(user);
     return meetingsWithLikes;
   }
 

@@ -83,7 +83,7 @@ export class User extends BaseEntity {
   meetings?: Meeting[];
 
   @ApiProperty()
-  @ManyToMany(() => Meeting, (meeting) => meeting.users)
+  @ManyToMany(() => Meeting, (meeting) => meeting.likes)
   @JoinTable({
     name: 'users_meetings',
     joinColumn: { name: 'meetingId' },
