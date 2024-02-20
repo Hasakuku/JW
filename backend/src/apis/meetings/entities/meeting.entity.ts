@@ -4,14 +4,17 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { InterestCategory, User } from 'src/apis/users/entities/user.entity';
+import { User } from 'src/apis/users/entities/user.entity';
 import { Participant } from 'src/apis/participants/entity/participant.entity';
+import { Category } from 'src/apis/categories/entity/categories.entity';
 
 @Entity()
 export class Meeting extends BaseEntity {
@@ -33,34 +36,34 @@ export class Meeting extends BaseEntity {
   @Column('date')
   meeting_date: Date;
 
-  @Column('simple-array')
-  category: InterestCategory[];
-
   @Column('int')
   member_limit: number;
 
   @Column('text')
   description: string;
 
-  @ManyToMany(() => Participant)
-  // @JoinTable({
-  //   name: 'meeting_participants',
-  //   joinColumn: {
-  //     name: 'meeting',
-  //     referencedColumnName: 'meetingId',
-  //   },
-  //   //[{ name: "meetingId" }]
-  //   inverseJoinColumn: {
-  //     name: 'participant',
-  //     referencedColumnName: 'userId',
-  //   },
-  //   //[{ name: "userId" }]
-  // })
+  @ManyToMany(() => Category, (category) => category.meetings)
+  @JoinTable({
+    name: 'meetings_categories',
+    joinColumn: { name: 'categoryId' },
+    inverseJoinColumn: { name: 'meetingId' },
+  })
+  categories?: Category[];
+
+  @OneToMany(() => Participant, (participant) => participant.meeting)
   participants?: Participant[];
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.meetings)
   @JoinColumn({ name: 'userId' })
-  userId: User;
+  user: User;
+
+  @ManyToMany(() => User, (user) => user.likes)
+  @JoinTable({
+    name: 'meetings_users',
+    joinColumn: { name: 'userId' },
+    inverseJoinColumn: { name: 'meetingId' },
+  })
+  users?: User[];
 
   @CreateDateColumn()
   created_at: Date;

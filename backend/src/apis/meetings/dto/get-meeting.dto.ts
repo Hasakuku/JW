@@ -6,9 +6,13 @@ import {
   IsDate,
   Max,
   IsInt,
+  IsArray,
+  IsIn,
+  IsEnum,
 } from 'class-validator';
-import { InterestCategory } from 'src/apis/users/entities/user.entity';
+import { Category } from 'src/apis/categories/entity/categories.entity';
 import { formatDate } from 'src/constant/formDate';
+import { isFloat64Array, isInt32Array } from 'util/types';
 
 export enum Sort {
   DEFAULT = 'default',
@@ -17,15 +21,30 @@ export enum Sort {
 }
 
 export class GetMeetingsDto {
+  constructor() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    this.date_start = today;
+    this.date_end = tomorrow;
+    this.member_min = 0;
+    this.member_max = 100;
+    this.sort = Sort.DEFAULT;
+    this.perPage = 9;
+    this.cursorId = 0;
+  }
   @ApiProperty({ example: '테스트', required: false })
   @IsOptional()
   @IsString()
-  keyword: string;
+  keyword?: string;
 
-  @ApiProperty({ example: 'default', required: false })
+  @ApiProperty({ type: [Number], example: [1, 2], required: false })
   @IsOptional()
-  @IsString()
-  category: InterestCategory;
+  @IsArray()
+  categories?: number[];
 
   @ApiProperty({ example: 0, required: false, minimum: 0 })
   @IsOptional()
@@ -45,7 +64,7 @@ export class GetMeetingsDto {
   })
   @IsOptional()
   @IsDate()
-  date_start: Date;
+  date_start?: Date;
 
   @ApiProperty({
     example: formatDate(new Date()),
@@ -54,16 +73,17 @@ export class GetMeetingsDto {
   })
   @IsOptional()
   @IsDate()
-  date_end: Date;
+  date_end?: Date;
 
-  @ApiProperty({ example: '일본', required: true })
+  @ApiProperty({ example: '일본', required: false })
   @IsOptional()
   @IsString()
-  location: string;
+  location?: string;
 
   @ApiProperty({ example: 'default', required: false })
   @IsOptional()
   @IsString()
+  @IsEnum(Sort)
   sort?: Sort;
 
   @ApiProperty({ example: 5, required: false, default: 9 })
@@ -79,5 +99,5 @@ export class GetMeetingsDto {
   @ApiProperty({ example: '', required: false })
   @IsOptional()
   @IsString()
-  cursorValue?: number;
+  cursorValue?: string | Date;
 }

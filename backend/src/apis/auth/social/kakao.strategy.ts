@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-kakao';
-import { Gender, InterestCategory } from 'src/apis/users/entities/user.entity';
+import { Gender } from 'src/apis/users/entities/user.entity';
 import { UserService } from 'src/apis/users/users.service';
 import { AuthService } from '../auth.service';
 
@@ -14,11 +14,12 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     super({
       clientID: '3f9afa0045d4d2e28e15fe477c6f683a',
       callbackURL: `http://15.164.233.81/api/v1/auth/kakao/login`,
+      // callbackURL: `http://localhost:3000/api/v1/auth/kakao/login`,
       clientSecret: '',
       // scope: ['account_email', 'profile_nickname'],
     });
   }
-//${process.env.LOCAL_FRONT_URI}
+  //${process.env.LOCAL_FRONT_URI}
   async validate(
     accessToken: string,
     refreshToken: string,
@@ -38,7 +39,6 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
         profileImage:
           account._json.kakao_account.profile.profile_image_url ?? null,
         gender: Gender[account._json.kakao_account.gender] ?? Gender.OTHER,
-        interestCategory: [InterestCategory['DEFAULT']],
       };
       await this.userService.createUser(user);
     }

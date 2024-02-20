@@ -4,25 +4,34 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Participant, ParticipantStatus } from './entity/participant.entity';
-import { CreateParticipantDto } from './dto/create-participant.dto';
 import { ParticipantRepository } from './participant.repository';
 import { In } from 'typeorm';
-import { Meeting } from '../meetings/entities/meeting.entity';
 import { MeetingsService } from '../meetings/meetings.service';
+import { UserRepository } from '../users/users.repository';
+import { MeetingRepository } from '../meetings/meetings.repository';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ParticipantService {
   constructor(
     private participantRepository: ParticipantRepository,
     private meetingService: MeetingsService,
+    private meetingRepository: MeetingRepository,
+    private userRepository: UserRepository,
   ) {}
 
-  async createParticipant(
-    createParticipantDto: CreateParticipantDto,
-  ): Promise<Participant> {
-    return this.participantRepository.createParticipant(createParticipantDto);
-  }
+  async createParticipant(user: User, meetingId: number): Promise<Participant> {
+    const userId = user.userId;
+    const getUser = await this.userRepository.findOneBy({ userId });
+    const getMeeting = await this.meetingRepository.findOneBy({ meetingId });
 
+    const participant = new Participant();
+    participant.user = getUser;
+    participant.meeting = getMeeting;
+
+    await this.participantRepository.save(participant);
+    return participant;
+  }
   async participantById(participantId: number): Promise<Participant> {
     return this.participantRepository.getParticipantById(participantId);
   }
@@ -41,7 +50,7 @@ export class ParticipantService {
 
     if (
       updatedParticipant !== ParticipantStatus.ATTENDED ||
-      !this.meetingIsFull(participant.meetingId)
+      !this.meetingIsFull(participant.meeting.meetingId)
     ) {
       participant.status = updatedParticipant;
       return await this.participantRepository.save(participant);
@@ -79,7 +88,7 @@ export class ParticipantService {
   async getParticipantsByUserId(userId: number): Promise<Participant[]> {
     return this.participantRepository.find({
       where: {
-        userId,
+        user: { userId },
         status: In([
           ParticipantStatus.PENDING,
           ParticipantStatus.CANCELED,
@@ -90,7 +99,7 @@ export class ParticipantService {
   }
   async getMeetingsByUserId(userId: number): Promise<Participant[]> {
     return this.participantRepository.find({
-      where: { userId, status: ParticipantStatus.ATTENDED },
+      where: { user: { userId }, status: ParticipantStatus.ATTENDED },
     });
   }
 
@@ -120,6 +129,11 @@ export class ParticipantService {
       .getRawMany();
   }
 
+  async getParticipantCountByMeetingId(meetingId: number): Promise<number> {
+    const meeting = await this.getParticipantCountByMeetingId(meetingId);
+    return meeting;
+  }
+
   // async getParticipantsAttendingByMeetingId(
   //   meetingId: number,
   // ): Promise<Participant[]> {
@@ -140,7 +154,7 @@ export class ParticipantService {
         'user.nickname AS nickname',
         'user.profileImage AS profileImage',
       ])
-      .leftJoin('participant.userId', 'user')
+      .leftJoin('participant.user', 'user')
       .where('participant.meetingId = :meetingId', { meetingId })
       .andWhere('participant.status = :status', {
         status: ParticipantStatus.ATTENDED,

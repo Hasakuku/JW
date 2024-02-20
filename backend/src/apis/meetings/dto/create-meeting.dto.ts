@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsString,
@@ -6,10 +6,9 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
-  isArray,
-  IsArray,
+  IsOptional,
 } from 'class-validator';
-import { InterestCategory } from 'src/apis/users/entities/user.entity';
+import { Category } from 'src/apis/categories/entity/categories.entity';
 import { formatDate } from 'src/constant/formDate';
 
 export class CreateMeetingDto {
@@ -21,7 +20,7 @@ export class CreateMeetingDto {
   @ApiProperty({ example: '열정적' })
   @IsNotEmpty()
   @IsString()
-  tag: string;
+  tag?: string;
 
   @ApiProperty({ example: '일본 도쿄' })
   @IsNotEmpty()
@@ -31,18 +30,17 @@ export class CreateMeetingDto {
   @ApiProperty({ example: 'image.png' })
   @IsNotEmpty()
   @IsString()
-  image: string;
+  image?: string;
 
-  @ApiProperty({ example: formatDate(new Date()) })
+  @ApiProperty({ example: new Date() })
   @IsNotEmpty()
   @IsDate()
   @Transform(({ value }) => new Date(value))
   meeting_date: Date;
 
-  @ApiProperty({ example: ['culture', 'food'] })
-  @IsNotEmpty()
-  @IsEnum(InterestCategory, { each: true })
-  category: InterestCategory[];
+  @ApiProperty({ example: [1, 2] })
+  @IsOptional()
+  categories?: number[];
 
   @ApiProperty({ example: 10 })
   @IsNotEmpty()
@@ -53,10 +51,6 @@ export class CreateMeetingDto {
   @IsNotEmpty()
   @IsString()
   description: string;
-
-  @ApiProperty({ example: [1, 2] })
-  participants?: number[];
-
-  @ApiProperty({ example: 1 })
-  creator: number;
 }
+
+export class UpdateMeetingDto extends PartialType(CreateMeetingDto) {}

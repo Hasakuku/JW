@@ -8,6 +8,8 @@ import {
   Patch,
   Post,
   Query,
+  Req,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -27,6 +29,8 @@ import {
 import { ParticipantService } from '../participants/participant.service';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
 import { GetMeetingsDto } from './dto/get-meeting.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { GetMeetingsPipe } from './pipes/getMeetings.pipe';
 
 @ApiTags('Meetings')
 @Controller('meetings')
@@ -36,6 +40,7 @@ export class MeetingsController {
     private participantService: ParticipantService,
   ) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   @UsePipes(ValidationPipe)
   @ApiOperation({ summary: '모임 생성' })
@@ -46,9 +51,12 @@ export class MeetingsController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   async createMeeting(
-    @Body() createMeetingDto: CreateMeetingDto,
+    @Body(new ValidationPipe({ transform: true }))
+    createMeetingDto: CreateMeetingDto,
+    @Req() req,
   ): Promise<object> {
-    await this.meetingsService.createMeetings(createMeetingDto);
+    const user = req.user;
+    await this.meetingsService.createMeetings(user, createMeetingDto);
     return { message: '모임생성 성공' };
   }
 
@@ -75,6 +83,21 @@ export class MeetingsController {
     return { result };
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/:id/host')
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '방장 모임 상세 조회' })
+  @ApiParam({ name: 'id', required: true, example: 1 })
+  async getMeetingDetailByHost(
+    @Req() req,
+    @Param('id') meetingId: number,
+  ): Promise<object> {
+    const result = await this.meetingsService.getMeetingDetailByHost(
+      meetingId,
+      req.user,
+    );
+    return { result };
+  }
   // @Post()
   // @UsePipes(ValidationPipe)
   // createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
@@ -107,8 +130,15 @@ export class MeetingsController {
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임 조회' })
   // @ApiQuery({ type: GetMeetingsDto })
-  async getMeetings(@Query() getMeetingsDto: GetMeetingsDto): Promise<object> {
-    const result = await this.meetingsService.getMeetings(getMeetingsDto);
+  async getMeetings(
+    @Req() req,
+    @Query(GetMeetingsPipe)
+    getMeetingsDto: GetMeetingsDto,
+  ): Promise<object> {
+    const result = await this.meetingsService.getMeetings(
+      getMeetingsDto,
+      req.user,
+    );
     return { result };
   }
 }

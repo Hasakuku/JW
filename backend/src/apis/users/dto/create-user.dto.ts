@@ -7,7 +7,7 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { Gender, Provider, InterestCategory } from '../entities/user.entity';
+import { Gender, Provider } from '../entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
@@ -48,7 +48,7 @@ export class CreateUserDto {
   @IsOptional()
   profileImage?: string;
 
-  @ApiProperty({ example: ['culture', 'food'] })
-  @IsEnum(InterestCategory)
-  interestCategory: InterestCategory[];
+  @ApiProperty({ example: [1, 2] })
+  @IsOptional()
+  categoryIds?: number[];
 }

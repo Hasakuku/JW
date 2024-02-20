@@ -85,23 +85,37 @@ export class UsersController {
     description: '사용자 신청 현황 조회',
   })
   async getUserParticipants(@Req() req): Promise<object> {
-    const result: Participant[] =
-      await this.participantService.getParticipantsByUserId(req.user.userId);
+    const result = await this.participantService.getParticipantsByUserId(
+      req.user.userId,
+    );
     return { result };
   }
 
-  //*사용자 참가 모임 조회
+  //*사용자 개설 모임 목록 조회
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/meetings-creator')
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '사용자 개설 모임 조회' })
+  @ApiResponse({ status: 200, description: '사용자 개설 모임 조회 성공' })
+  async getMeetingsByUser(@Req() req): Promise<object> {
+    const user = req.user;
+    const result = await this.userService.getMeetingsByUser(user);
+    return { result };
+  }
+
+  //*사용자 참가 모임 목록 조회
   @UseGuards(AuthGuard('jwt'))
   @Get('/meetings')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '사용자 참가 모임 조회' })
   @ApiResponse({
     status: 200,
-    description: '사용자 참가 모임 조회',
+    description: '사용자 참가 모임 조회 성공',
   })
   async getUserMeetings(@Req() req): Promise<object> {
-    const result: Participant[] =
-      await this.participantService.getMeetingsByUserId(req.user.userId);
+    const result = await this.participantService.getMeetingsByUserId(
+      req.user.userId,
+    );
     return { result };
   }
   //* 사용자 정보 조회

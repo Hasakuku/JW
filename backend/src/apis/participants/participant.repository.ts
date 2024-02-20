@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Participant } from './entity/participant.entity';
-import { CreateParticipantDto } from './dto/create-participant.dto';
 
 @Injectable()
 export class ParticipantRepository extends Repository<Participant> {
@@ -9,25 +8,18 @@ export class ParticipantRepository extends Repository<Participant> {
     super(Participant, dataSource.createEntityManager());
   }
 
-  async createParticipant(
-    createParticipantDto: CreateParticipantDto,
-  ): Promise<Participant> {
-    const participant = this.create(createParticipantDto);
-    return await this.save(participant);
-  }
-
   async getParticipantById(participantId: number): Promise<Participant> {
     return await this.findOne({ where: { participantId } });
   }
 
   async getParticipantByUserId(userId: number): Promise<Participant[]> {
-    return await this.find({ where: { userId } });
+    return await this.find({ where: { user: { userId } } });
   }
 
   async getParticipantByMeetingId(
     meetingId: number,
   ): Promise<Participant | undefined> {
-    return await this.findOne({ where: { meetingId } });
+    return await this.findOne({ where: { meeting: { meetingId } } });
   }
 
   async updateParticipant(

@@ -2,7 +2,7 @@ db:
   host: '3.34.5.249'
   username: 'wonsik'
   password: 'wonsik'
-  synchronize: false
+  synchronize: true
 
 jwt:
   secret: 'Seoul'

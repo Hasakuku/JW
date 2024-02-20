@@ -8,7 +8,6 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  RelationId,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
@@ -21,20 +20,18 @@ export enum ParticipantStatus {
 }
 
 @Entity()
-@Unique(['meetingId', 'userId'])
+@Unique(['meeting', 'user'])
 export class Participant extends BaseEntity {
   @PrimaryGeneratedColumn()
   participantId: number;
 
-  @ManyToOne(() => Meeting)
+  @ManyToOne(() => Meeting, (meeting) => meeting.participants)
   @JoinColumn({ name: 'meetingId' })
-  @RelationId((participant: Participant) => participant.meetingId)
-  meetingId: number;
+  meeting: Meeting;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.participants)
   @JoinColumn({ name: 'userId' })
-  // @RelationId((participant: Participant) => participant.userId)
-  userId: number;
+  user: User;
 
   @Column({
     type: 'enum',

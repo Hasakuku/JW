@@ -6,6 +6,8 @@ import {
   Param,
   Post,
   Put,
+  Req,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ParticipantService } from './participant.service';
@@ -17,20 +19,27 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Participant, ParticipantStatus } from './entity/participant.entity';
-import { CreateParticipantDto } from './dto/create-participant.dto';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Participants')
 @Controller('participants')
 export class ParticipantController {
   constructor(private participantService: ParticipantService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '참가 상태 생성' })
-  @ApiBody({ description: '참가 상태 생성', type: CreateParticipantDto })
-  async create(@Body() participant: Participant): Promise<object> {
-    await this.participantService.createParticipant(participant);
+  @ApiBody({
+    description: '참가 상태 생성',
+    examples: { 생성: { value: { meetingId: 1 } } },
+  })
+  async createParticipant(
+    @Req() req,
+    @Body('meetingId') meetingId: number,
+  ): Promise<object> {
+    await this.participantService.createParticipant(req.user, meetingId);
     return { message: '생성 성공' };
   }
 

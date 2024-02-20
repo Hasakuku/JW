@@ -1,16 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
 import * as crypto from 'crypto';
+import { Category } from 'src/apis/categories/entity/categories.entity';
+import { Meeting } from 'src/apis/meetings/entities/meeting.entity';
 import { Participant } from 'src/apis/participants/entity/participant.entity';
 import {
   BaseEntity,
-  BeforeInsert,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
-  // PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -25,17 +26,6 @@ export enum Provider {
   LOCAL = 'local',
   KAKAO = 'kakao',
   GOOGLE = 'google',
-}
-
-export enum InterestCategory {
-  DEFAULT = 'default',
-  CULTURE = 'culture', //문화예술
-  FOOD = 'food', // 음식
-  SPORTS = 'sports', // 스포츠
-  TOUR = 'tour', // 관광
-  RELIGION = 'religion', // 종교
-  WELLBING = 'wellbing', // 건강,휴양
-  SOCIAL = 'social', // 소셜활동
 }
 
 @Entity()
@@ -72,17 +62,34 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   profileImage?: string;
 
-  @ApiProperty()
-  // @IsEnum(InterestCategory, { each: true })
-  @Column('simple-array')
-  interestCategory: InterestCategory[];
-
-  @ApiProperty()
-  @OneToMany(() => Participant, (participant) => participant.userId)
-  participants: Participant[];
-
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
+
+  @ApiProperty()
+  @ManyToMany(() => Category, (category) => category.users)
+  @JoinTable({
+    name: 'users_categories',
+    joinColumn: { name: 'categoryId' },
+    inverseJoinColumn: { name: 'userId' },
+  })
+  categories?: Category[];
+
+  @ApiProperty()
+  @OneToMany(() => Participant, (participant) => participant.user)
+  participants?: Participant[];
+
+  @ApiProperty()
+  @OneToMany(() => Meeting, (meeting) => meeting.user)
+  meetings?: Meeting[];
+
+  @ApiProperty()
+  @ManyToMany(() => Meeting, (meeting) => meeting.users)
+  @JoinTable({
+    name: 'users_meetings',
+    joinColumn: { name: 'meetingId' },
+    inverseJoinColumn: { name: 'userId' },
+  })
+  likes?: Meeting[];
 
   @ApiProperty()
   @CreateDateColumn()

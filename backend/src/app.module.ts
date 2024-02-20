@@ -8,6 +8,7 @@ import { UsersModule } from './apis/users/users.module';
 import { ReportsModule } from './apis/reports/reports.module';
 import { AdminModule } from './apis/admin/admin.module';
 import { ParticipantModule } from './apis/participants/participant.module';
+import { CategoryModule } from './apis/categories/categories.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ParticipantModule } from './apis/participants/participant.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    CategoryModule,
     ParticipantModule,
     MeetingsModule,
     AuthModule,

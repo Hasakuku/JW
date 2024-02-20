@@ -18,6 +18,7 @@ import { AuthCode } from './entities/auth-code.entity';
 import { SocialUserDto } from './dto/social-user.dto';
 import { User } from '../users/entities/user.entity';
 import { HttpService } from '@nestjs/axios';
+import { AuthCodeDto } from './dto/auth-code.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -107,7 +108,12 @@ export class AuthService {
 
     if (!foundUser || !(await foundUser.validatePassword(password)))
       throw new UnauthorizedException(authMessage.LOGIN_FAILED);
-    const payload = { email };
+    const payload = {
+      email: foundUser.email,
+      isAdmin: foundUser.isAdmin,
+      username: foundUser.username,
+      userId: foundUser.userId,
+    };
     const accessToken = await this.jwtService.sign(payload);
     return accessToken;
   }
@@ -179,7 +185,8 @@ export class AuthService {
   }
 
   //* 이메일 인증 확인
-  async verifyAuthCode(email: string, code: number): Promise<boolean> {
+  async verifyAuthCode(authCodeDto: AuthCodeDto): Promise<boolean> {
+    const { email, code } = authCodeDto;
     const authCode = await this.entityManager
       .createQueryBuilder(AuthCode, 'authCode')
       .where('authCode.email = :email', { email })

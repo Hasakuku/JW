@@ -7,13 +7,14 @@ import { EntityManager } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import * as config from 'config';
 import { Request } from 'express';
+import { UserService } from '../users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     @InjectEntityManager()
     private entityManager: EntityManager,
-    // private configService: ConfigService,
+    private userService: UserService,
   ) {
     super({
       secretOrKey: process.env.JWT_SECRET || config.get('jwt.secret'),
@@ -30,8 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload) {
-    const { username } = payload;
-    const user: User = await this.entityManager.findOneBy(User, { username });
+    const { email } = payload;
+    const user: User = await this.userService.getUserByEmail(email);
     if (!user) {
       throw new UnauthorizedException();
     }
