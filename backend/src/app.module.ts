@@ -10,6 +10,7 @@ import { AdminModule } from './apis/admin/admin.module';
 import { ParticipantModule } from './apis/participants/participant.module';
 import { CategoryModule } from './apis/categories/categories.module';
 import { ChatModule } from './apis/chat/chat.module';
+import { DistStorageModule } from './apis/files/files.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ChatModule } from './apis/chat/chat.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    DistStorageModule,
     CategoryModule,
     ParticipantModule,
     MeetingsModule,
