@@ -18,6 +18,7 @@ import { TransformInterceptor } from 'src/common/interceptors/response-type.inte
 import { ParticipantService } from '../participants/participant.service';
 import { Participant } from '../participants/entity/participant.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { PaginationDto } from 'src/constant/pagination.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -84,9 +85,13 @@ export class UsersController {
     status: 200,
     description: '사용자 신청 현황 조회',
   })
-  async getUserParticipants(@Req() req): Promise<object> {
+  async getUserParticipants(
+    @Req() req,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<object> {
     const result = await this.participantService.getParticipantsByUserId(
       req.user.userId,
+      paginationDto,
     );
     return { result };
   }
@@ -97,9 +102,15 @@ export class UsersController {
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '사용자 개설 모임 조회' })
   @ApiResponse({ status: 200, description: '사용자 개설 모임 조회 성공' })
-  async getMeetingsByUser(@Req() req): Promise<object> {
+  async getMeetingsByUser(
+    @Req() req,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<object> {
     const user = req.user;
-    const result = await this.userService.getMeetingsByUser(user);
+    const result = await this.userService.getMeetingsByUser(
+      user,
+      paginationDto,
+    );
     return { result };
   }
 
@@ -112,9 +123,13 @@ export class UsersController {
     status: 200,
     description: '사용자 참가 모임 조회 성공',
   })
-  async getUserMeetings(@Req() req): Promise<object> {
+  async getUserMeetings(
+    @Req() req,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<object> {
     const result = await this.participantService.getMeetingsByUserId(
       req.user.userId,
+      paginationDto,
     );
     return { result };
   }
@@ -152,8 +167,14 @@ export class UsersController {
   // @UsePipes(ValidationPipe)
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '좋아요 목록 조회' })
-  async getLikes(@Req() req): Promise<object> {
-    const result = await this.userService.getLikes(req.user.userId);
+  async getLikes(
+    @Req() req,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<object> {
+    const result = await this.userService.getLikes(
+      req.user.userId,
+      paginationDto,
+    );
     return { result };
   }
 
@@ -165,8 +186,8 @@ export class UsersController {
     description: '사용자 목록 조회',
     type: Array<User>,
   })
-  async getUserAll(): Promise<object> {
-    const result = await this.userService.getUserAll();
+  async getUserAll(@Query() paginationDto: PaginationDto): Promise<object> {
+    const result = await this.userService.getUserAll(paginationDto);
     return { result };
   }
 }

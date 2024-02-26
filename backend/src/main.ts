@@ -18,11 +18,13 @@ async function bootstrap() {
   );
   app.enableCors({
     origin: 'http://15.164.233.81',
+    // origin: '*',
     credentials: true,
   });
-  app.useWebSocketAdapter(new WsAdapter(app));
+
   app.setGlobalPrefix('api/v1');
   app.use(cookieParser());
+  // app.useWebSocketAdapter(new WsAdapter(app));
   // app.useGlobalFilters(new HttpExceptionFilter());
 
   const swaggerConfig = new DocumentBuilder()

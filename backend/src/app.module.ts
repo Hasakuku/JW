@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MeetingsModule } from './apis/meetings/meetings.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeORMConfig } from './configs/typeorm.config';
@@ -9,8 +9,7 @@ import { ReportsModule } from './apis/reports/reports.module';
 import { AdminModule } from './apis/admin/admin.module';
 import { ParticipantModule } from './apis/participants/participant.module';
 import { CategoryModule } from './apis/categories/categories.module';
-import { JwtMiddleware } from './apis/auth/middlewares/jwt.middleware';
-import { MeetingsController } from './apis/meetings/meetings.controller';
+import { ChatModule } from './apis/chat/chat.module';
 
 @Module({
   imports: [
@@ -25,6 +24,7 @@ import { MeetingsController } from './apis/meetings/meetings.controller';
     UsersModule,
     ReportsModule,
     AdminModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

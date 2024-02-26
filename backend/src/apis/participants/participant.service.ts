@@ -10,6 +10,7 @@ import { MeetingsService } from '../meetings/meetings.service';
 import { UserRepository } from '../users/users.repository';
 import { MeetingRepository } from '../meetings/meetings.repository';
 import { User } from '../users/entities/user.entity';
+import { PaginationDto } from 'src/constant/pagination.dto';
 
 @Injectable()
 export class ParticipantService {
@@ -85,7 +86,11 @@ export class ParticipantService {
   //   return this.participantRepository.save(participant);
   // }
 
-  async getParticipantsByUserId(userId: number): Promise<Participant[]> {
+  async getParticipantsByUserId(
+    userId: number,
+    paginationDto: PaginationDto,
+  ): Promise<Participant[]> {
+    const { page = 1, perPage = 10 } = paginationDto;
     return this.participantRepository.find({
       where: {
         user: { userId },
@@ -95,11 +100,19 @@ export class ParticipantService {
           ParticipantStatus.REJECTED,
         ]),
       },
+      skip: (page - 1) * perPage,
+      take: perPage,
     });
   }
-  async getMeetingsByUserId(userId: number): Promise<Participant[]> {
+  async getMeetingsByUserId(
+    userId: number,
+    paginationDto: PaginationDto,
+  ): Promise<Participant[]> {
+    const { page = 1, perPage = 10 } = paginationDto;
     return this.participantRepository.find({
       where: { user: { userId }, status: ParticipantStatus.ATTENDED },
+      skip: (page - 1) * perPage,
+      take: perPage,
     });
   }
 
@@ -116,8 +129,11 @@ export class ParticipantService {
   //     relations: ['userId'],
   //   });
   // }
-  async getParticipantsByMeetingId(meetingId: number): Promise<Participant[]> {
-    return this.participantRepository
+  async getParticipantsByMeetingId(
+    meetingId: number,
+    paginationDto?: PaginationDto,
+  ): Promise<Participant[]> {
+    const query = await this.participantRepository
       .createQueryBuilder('participant')
       .select([
         'participant.participantId AS participantId',
@@ -125,8 +141,14 @@ export class ParticipantService {
         'user.userId AS userId',
       ])
       .leftJoin('participant.user', 'user')
-      .where('participant.meetingId = :meetingId', { meetingId })
-      .getRawMany();
+      .where('participant.meetingId = :meetingId', { meetingId });
+
+    if (paginationDto) {
+      const { page = 1, perPage = 10 } = paginationDto;
+      query.skip((page - 1) * perPage).take(perPage);
+    }
+    const result = query.getRawMany();
+    return result;
   }
 
   async getParticipantCountByMeetingId(meetingId: number): Promise<number> {
@@ -145,8 +167,9 @@ export class ParticipantService {
   // }
   async getParticipantsAttendingByMeetingId(
     meetingId: number,
+    paginationDto?: PaginationDto,
   ): Promise<Participant[]> {
-    return this.participantRepository
+    const query = await this.participantRepository
       .createQueryBuilder('participant')
       .select([
         'participant.participantId AS participantId',
@@ -158,7 +181,14 @@ export class ParticipantService {
       .where('participant.meetingId = :meetingId', { meetingId })
       .andWhere('participant.status = :status', {
         status: ParticipantStatus.ATTENDED,
-      })
-      .getRawMany();
+      });
+
+    if (paginationDto) {
+      const { page = 1, perPage = 10 } = paginationDto;
+      query.skip((page - 1) * perPage).take(perPage);
+    }
+
+    const result = await query.getRawMany();
+    return result;
   }
 }

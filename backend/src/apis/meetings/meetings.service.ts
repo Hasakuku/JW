@@ -10,24 +10,9 @@ import { GetMeetingsDto } from './dto/get-meeting.dto';
 import { User } from '../users/entities/user.entity';
 
 import { CategoryRepository } from '../categories/categories.repository';
-import { ParticipantService } from '../participants/participant.service';
 import { ParticipantRepository } from '../participants/participant.repository';
-import { Category } from '../categories/entity/categories.entity';
+import { MeetingDetailResponse, MeetingListResponse } from './meetings.type';
 
-interface MeetingResponse {
-  meetingId: number;
-  title: string;
-  categories: Category[]; // 카테고리의 타입이 무엇인지에 따라 변경될 수 있습니다.
-  image: string;
-  description: string;
-  location: string;
-  meeting_date: Date;
-  member_limit: number;
-  created_at: Date;
-  host: User; // 'User'는 사용자 정보를 담는 타입입니다. 실제 사용자 정보의 형태에 따라 변경될 수 있습니다.
-  participants_number: number;
-  isLiked: boolean;
-}
 @Injectable()
 export class MeetingsService {
   constructor(
@@ -36,6 +21,7 @@ export class MeetingsService {
     private readonly participantRepository: ParticipantRepository,
   ) {}
 
+  //* 모임 생성
   async createMeetings(
     user: User,
     createMeetingDto: CreateMeetingDto,
@@ -53,10 +39,11 @@ export class MeetingsService {
     return await this.meetingRepository.save(meeting);
   }
 
+  //* 모임 상세 조회
   async getMeetingById(
     meetingId: number,
     user?: User,
-  ): Promise<MeetingResponse> {
+  ): Promise<MeetingDetailResponse> {
     const meeting = await this.meetingRepository.findOne({
       where: { meetingId },
       relations: ['categories', 'user', 'likes'],
@@ -81,7 +68,7 @@ export class MeetingsService {
     );
 
     meeting.participants = participants;
-    const result: MeetingResponse = {
+    const result: MeetingDetailResponse = {
       meetingId: meeting.meetingId,
       title: meeting.title,
       categories: meeting.categories,
@@ -98,6 +85,7 @@ export class MeetingsService {
     return result;
   }
 
+  //* 방장 모임 상세 조회
   async getMeetingDetailByHost(
     meetingId: number,
     user: User,
@@ -112,6 +100,7 @@ export class MeetingsService {
     return meeting;
   }
 
+  //* 모임 목록 조회
   async getMeetings(
     {
       keyword,
@@ -223,7 +212,7 @@ export class MeetingsService {
         username: meeting.user.username,
         profileImage: meeting.user.profileImage,
       };
-      return {
+      const result: MeetingListResponse = {
         meetingId: meeting.meetingId,
         title: meeting.title,
         categories: meeting.categories,
@@ -238,11 +227,13 @@ export class MeetingsService {
         isLiked,
         isActivated,
       };
+      return result;
     });
     console.log(user);
     return meetingsWithLikes;
   }
 
+  //* 모임 수정
   async updateMeeting(
     meetingId: number,
     updateMeetingDto: UpdateMeetingDto,

@@ -12,6 +12,7 @@ import { CategoryRepository } from '../categories/categories.repository';
 import { In } from 'typeorm';
 import { MeetingRepository } from '../meetings/meetings.repository';
 import { Meeting } from '../meetings/entities/meeting.entity';
+import { PaginationDto } from 'src/constant/pagination.dto';
 
 @Injectable()
 export class UserService {
@@ -84,8 +85,12 @@ export class UserService {
     return !!result;
   }
 
-  async getUserAll(): Promise<User[]> {
-    const getUserAll = await this.usersRepository.findBy({});
+  async getUserAll(pagination: PaginationDto): Promise<User[]> {
+    const { perPage = 10, page = 1 } = pagination;
+    const getUserAll = await this.usersRepository.find({
+      skip: (page - 1) * perPage,
+      take: perPage,
+    });
     return getUserAll;
   }
 
@@ -115,13 +120,20 @@ export class UserService {
     return !result;
   }
 
-  async getMeetingsByUser(user: User): Promise<object[]> {
+  async getMeetingsByUser(
+    user: User,
+    paginationDto: PaginationDto,
+  ): Promise<object[]> {
+    const { page = 1, perPage = 10 } = paginationDto;
     const userId = user.userId;
-    const getUser = await this.usersRepository.findOne({
-      where: { userId },
+    const getUser = await this.usersRepository.findOne({ where: { userId } });
+    const getMeetings = await this.meetingRepository.find({
+      where: { user: getUser },
       relations: ['meetings'],
+      skip: (page - 1) * perPage,
+      take: perPage,
     });
-    return getUser.meetings;
+    return getMeetings;
   }
 
   async addLike(userId: number, meetingId: number): Promise<void> {
@@ -129,12 +141,17 @@ export class UserService {
       where: { userId },
       relations: ['likes'],
     });
+
     const meeting = await this.meetingRepository.findOneBy({ meetingId });
-    if (!user.likes) {
-      user.likes = [meeting];
-    } else if (!user.likes.find((like) => like.meetingId === meetingId)) {
+    if (!meeting) throw new NotFoundException('모임이 존재하지 않습니다.');
+
+    if (
+      user.likes &&
+      !user.likes.find((like) => like.meetingId === meetingId)
+    ) {
       user.likes.push(meeting);
     }
+    // console.log(user.likes)
     await this.usersRepository.save(user);
   }
 
@@ -147,11 +164,17 @@ export class UserService {
     await this.usersRepository.save(user);
   }
 
-  async getLikes(userId: number): Promise<Meeting[]> {
+  async getLikes(
+    userId: number,
+    paginationDto?: PaginationDto,
+  ): Promise<Meeting[]> {
+    const { perPage = 10, page = 1 } = paginationDto;
     const user = await this.usersRepository.findOne({
       where: { userId },
-      relations: ['likes'],
     });
-    return user.likes;
+    const start = (page - 1) * perPage;
+    const end = page * perPage;
+
+    return user.likes.splice(start, end);
   }
 }

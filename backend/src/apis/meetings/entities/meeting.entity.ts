@@ -58,11 +58,6 @@ export class Meeting extends BaseEntity {
   user: User;
 
   @ManyToMany(() => User, (user) => user.likes)
-  @JoinTable({
-    name: 'meetings_users',
-    joinColumn: { name: 'userId' },
-    inverseJoinColumn: { name: 'meetingId' },
-  })
   likes?: User[];
 
   @CreateDateColumn()

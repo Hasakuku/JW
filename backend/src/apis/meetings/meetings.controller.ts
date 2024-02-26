@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   Query,
   Req,
@@ -16,13 +15,10 @@ import {
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
-// import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
-import { Meeting } from './entities/meeting.entity';
 import {
   ApiBody,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -33,6 +29,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetMeetingsPipe } from './pipes/getMeetings.pipe';
 import { UserService } from '../users/users.service';
 import { verify } from 'jsonwebtoken';
+import { PaginationDto } from 'src/constant/pagination.dto';
 
 @ApiTags('Meetings')
 @Controller('meetings')
@@ -60,7 +57,7 @@ export class MeetingsController {
   ): Promise<object> {
     const user = req.user;
     await this.meetingsService.createMeetings(user, createMeetingDto);
-    return { message: '모임생성 성공' };
+    return { message: '모임 생성 성공' };
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -71,9 +68,9 @@ export class MeetingsController {
   @ApiParam({ name: 'id', required: true, example: 1 })
   async addLike(
     @Req() req,
-    @Param('meetingId') meetingId: number,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<object> {
-    await this.userService.addLike(req.user.userId, meetingId);
+    await this.userService.addLike(req.user.userId, id);
     return { message: '좋아요 추가 성공' };
   }
 
@@ -85,9 +82,9 @@ export class MeetingsController {
   @ApiParam({ name: 'id', required: true, example: 1 })
   async removeLike(
     @Req() req,
-    @Param('meetingId') meetingId: number,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<object> {
-    await this.userService.removeLike(req.user.userId, meetingId);
+    await this.userService.removeLike(req.user.userId, id);
     return { message: '좋아요 삭제 성공' };
   }
 
@@ -96,8 +93,14 @@ export class MeetingsController {
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임의 참가 상태 목록 조회' })
   @ApiParam({ name: 'id', required: true, example: 1 })
-  async getParticipantsByMeetingId(@Param('id') id: number): Promise<object> {
-    const result = await this.participantService.getParticipantsByMeetingId(id);
+  async getParticipantsByMeetingId(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() paginationDto?: PaginationDto,
+  ): Promise<object> {
+    const result = await this.participantService.getParticipantsByMeetingId(
+      id,
+      paginationDto,
+    );
     return { result };
   }
 
@@ -107,10 +110,14 @@ export class MeetingsController {
   @ApiOperation({ summary: '모임의 참가자 목록 조회' })
   @ApiParam({ name: 'id', required: true, example: 1 })
   async getParticipantsAttendingByMeetingId(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Query() paginationDto?: PaginationDto,
   ): Promise<object> {
     const result =
-      await this.participantService.getParticipantsAttendingByMeetingId(id);
+      await this.participantService.getParticipantsAttendingByMeetingId(
+        id,
+        paginationDto,
+      );
     return { result };
   }
 
@@ -121,10 +128,10 @@ export class MeetingsController {
   @ApiParam({ name: 'id', required: true, example: 1 })
   async getMeetingDetailByHost(
     @Req() req,
-    @Param('id') meetingId: number,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<object> {
     const result = await this.meetingsService.getMeetingDetailByHost(
-      meetingId,
+      id,
       req.user,
     );
     return { result };
@@ -151,25 +158,10 @@ export class MeetingsController {
     const result = await this.meetingsService.getMeetingById(id, user);
     return { result };
   }
-  // @Delete('/:id')
-  // deleteBoard(@Param('id', ParseIntPipe) id): Promise<void> {
-  //   return this.boardsService.deleteBoard(id);
-  // }
-  // @Patch('/:id/status')
-  // updateBoardStatus(
-  //   @Param('id', ParseIntPipe) id,
-  //   @Body('status', BoardStatusValidationPipe) status: BoardStatus,
-  // ): Promise<Board> {
-  //   return this.boardsService.updateBoardStatus(id, status);
-  // }
-  // @Get()
-  // getAllBoards(): Promise<Board[]> {
-  //   return this.boardsService.getAllBoards();
-  // }
+
   @Get()
   @UseInterceptors(TransformInterceptor)
-  @ApiOperation({ summary: '모임 조회' })
-  // @ApiQuery({ type: GetMeetingsDto })
+  @ApiOperation({ summary: '모임 목록 조회' })
   async getMeetings(
     @Req() req,
     @Query(GetMeetingsPipe)

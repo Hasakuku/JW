@@ -86,8 +86,8 @@ export class User extends BaseEntity {
   @ManyToMany(() => Meeting, (meeting) => meeting.likes)
   @JoinTable({
     name: 'users_meetings',
-    joinColumn: { name: 'meetingId' },
-    inverseJoinColumn: { name: 'userId' },
+    joinColumn: { name: 'userId' },
+    inverseJoinColumn: { name: 'meetingId' },
   })
   likes?: Meeting[];
 
