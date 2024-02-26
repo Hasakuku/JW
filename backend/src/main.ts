@@ -17,8 +17,8 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: 'http://15.164.233.81',
-    // origin: '*',
+    // origin: 'http://15.164.233.81',
+    origin: '*',
     credentials: true,
   });
 
