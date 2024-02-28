@@ -37,7 +37,7 @@ export class AuthController {
 
   @Get('/https-check')
   async https_Check(@Req() req, @Res() res) {
-    return res.status(200);
+    return res.status(200).json({});
   }
 
   //*카카오 로그인
