@@ -24,7 +24,7 @@ import { DiskStorageController } from './files.controller';
       }),
       // (1)
       limits: {
-        fileSize: 1024 * 1024 * 5, // 5 MB
+        fileSize: 1024 * 1024 * 10, // 10 MB
         files: 1,
       },
       fileFilter(req, file, callback) {

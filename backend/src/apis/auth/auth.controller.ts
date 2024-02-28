@@ -46,9 +46,10 @@ export class AuthController {
   @Get('kakao/login')
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLogin(@Req() req, @Res() res) {
-    res.cookie('jwt', req.user.token, {
-      httpOnly: true,
-    });
+    // res.cookie('jwt', req.user.token, {
+    //   httpOnly: true,
+    // });
+    res.setHeader('Authorization', 'Bearer' + req.user.token);
     res.redirect(process.env.FRONT_URI);
     // res.redirect('http://localhost:3000');
   }
@@ -88,18 +89,43 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
-    res.cookie('jwt', accessToken, { httpOnly: true });
-    res.status(201).json({ message: authMessage.LOGIN_SUCCESS });
+    res.setHeader('Authorization', 'Bearer' + accessToken);
+    res
+      .status(201)
+      .json({ result: res.header, message: authMessage.LOGIN_SUCCESS });
   }
 
   //*로그 아웃
   @Delete('/logout')
+  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(TransformInterceptor)
   @ApiOperation(SWAGGER['Logout']['op'])
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        jwt: {
+          type: 'string',
+          example: 'token',
+        },
+      },
+    },
+  })
   @ApiResponse(SWAGGER['Logout']['res'][204])
-  async logout(@Res() res: Response): Promise<void> {
-    res.cookie('jwt', null, { maxAge: 0 });
-    res.status(204).json({});
+  async logout(@Req() req, @Res() res: Response): Promise<void> {
+    // 토큰을 검증하고 사용자를 찾습니다.
+    // const token = req.user;
+    // const user = await this.authService.findUserByToken(token);
+
+    // if (!user) {
+    // throw new UnauthorizedException('Invalid token');
+    // }
+
+    // 사용자의 토큰을 무효화합니다.
+    // await this.authService.invalidateUserToken(user.id);
+
+    // 성공적인 로그아웃 메시지를 반환합니다.
+    res.status(204).json({ message: authMessage.LOGOUT_SUCCESS });
   }
 
   //* 이메일 인증 코드 발송
