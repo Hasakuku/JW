@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Post,
   Query,
   Req,
@@ -33,6 +34,11 @@ import * as SWAGGER from './auth.swagger';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Get('/https-check')
+  async https_Check(@Req() req, @Res() res) {
+    return res.status(200);
+  }
 
   //*카카오 로그인
   @UseGuards(KakaoAuthGuard)

@@ -207,6 +207,10 @@ export class AuthService {
     return true;
   }
 
+  async invalidateUserToken(token): Promise<void> {
+    
+  }
+
   //  async resetPassword(email: string, newPassword: string): Promise<void> {
   //   const user = await this.userService.getUserByEmail(email);
   //   if (!user) {
