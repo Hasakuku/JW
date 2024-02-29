@@ -17,8 +17,8 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    // origin: 'https://jwproject.vercel.app',
-    origin: '*',
+    origin: 'https://jwproject.vercel.app',
+    // origin: '*',
     credentials: true,
   });
 
