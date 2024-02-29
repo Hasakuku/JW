@@ -17,7 +17,7 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    // origin: 'http://43.201.9.57,
+    // origin: 'https://jwproject.vercel.app',
     origin: '*',
     credentials: true,
   });
