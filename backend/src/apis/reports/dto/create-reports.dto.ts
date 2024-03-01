@@ -11,10 +11,6 @@ export class CreateUserReportDto {
   @IsNotEmpty()
   @IsString()
   content: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  reportedUser: User;
 }
 
 export class CreateMeetingReportDto {
@@ -25,8 +21,4 @@ export class CreateMeetingReportDto {
   @IsNotEmpty()
   @IsString()
   content: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  meeting: Meeting;
 }
