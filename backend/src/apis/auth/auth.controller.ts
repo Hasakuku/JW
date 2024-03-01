@@ -60,8 +60,8 @@ export class AuthController {
       secure: true,
     });
     // res.json({ token: req.user.token });
-    return res.redirect(process.env.FRONT_URI);
-    // res.redirect('http://localhost:3000');
+    // return res.redirect(process.env.FRONT_URI);
+    res.redirect('http://localhost:3000');
   }
   //*카카오 연결 끊기
   @Get('kakao/withdraw')
