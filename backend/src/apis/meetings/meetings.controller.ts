@@ -16,6 +16,7 @@ import {
 import { MeetingsService } from './meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
@@ -43,6 +44,7 @@ export class MeetingsController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   @UsePipes(ValidationPipe)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '모임 생성' })
   @ApiBody({ type: CreateMeetingDto })
   @ApiResponse({
@@ -64,6 +66,7 @@ export class MeetingsController {
   @Post('/:id/like')
   @UsePipes(ValidationPipe)
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '좋아요 추가' })
   @ApiParam({ name: 'id', required: true, example: 1 })
   async addLike(
@@ -78,6 +81,7 @@ export class MeetingsController {
   @Delete('/:id/like')
   @UsePipes(ValidationPipe)
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '좋아요 삭제' })
   @ApiParam({ name: 'id', required: true, example: 1 })
   async removeLike(
@@ -124,6 +128,7 @@ export class MeetingsController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/:id/host')
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '방장 모임 상세 조회' })
   @ApiParam({ name: 'id', required: true, example: 1 })
   async getMeetingDetailByHost(

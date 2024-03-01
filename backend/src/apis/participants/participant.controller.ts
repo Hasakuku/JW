@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ParticipantService } from './participant.service';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
@@ -30,6 +31,7 @@ export class ParticipantController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '참가 상태 생성' })
   @ApiBody({
     description: '참가 상태 생성',

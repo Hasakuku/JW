@@ -38,8 +38,15 @@ async function bootstrap() {
     .setTitle('JW 프로젝트')
     .setDescription('JW 프로젝트 API description')
     .setVersion('1.0')
-    .addTag('Auth')
-    .addTag('Meetings')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'Bearer',
+        name: 'JWT',
+        in: 'header',
+      },
+      'jwt',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api-docs', app, document);

@@ -55,7 +55,7 @@ export class AuthController {
     // res.cookie('jwt', req.user.token, {
     //   httpOnly: true,
     // });
-    res.setHeader('Authorization', 'Bearer ' + req.user.token);
+    res.setHeader('Authorization', `'Bearer ${req.user.token}`);
     res.redirect(process.env.FRONT_URI);
     // res.redirect('http://localhost:3000');
   }
@@ -95,7 +95,7 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
-    res.setHeader('Authorization', 'Bearer' + accessToken);
+    res.setHeader('Authorization', 'Bearer ' + accessToken);
     res
       .status(201)
       .json({ result: res.header, message: authMessage.LOGIN_SUCCESS });
@@ -105,6 +105,7 @@ export class AuthController {
   @Delete('/logout')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation(SWAGGER['Logout']['op'])
   @ApiBody({
     schema: {

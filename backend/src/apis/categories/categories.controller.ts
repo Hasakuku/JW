@@ -7,18 +7,22 @@ import {
   Param,
   Body,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './categories.service';
-import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Categories')
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '카테고리 생성' })
   @ApiBody({
     description: '카테고리 생성',
@@ -46,9 +50,11 @@ export class CategoryController {
     return { result };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Put(':id')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '카테고리 수정' })
+  @ApiBearerAuth('jwt')
   @ApiParam({ name: 'id', description: '카테고리 ID', example: 1 })
   async update(
     @Param('id') id: number,
@@ -58,8 +64,10 @@ export class CategoryController {
     return { result };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '카테고리 삭제' })
   @ApiParam({ name: 'id', description: '카테고리 ID', example: 1 })
   async remove(@Param('id') id: number): Promise<void> {

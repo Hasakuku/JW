@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
 import { ParticipantService } from '../participants/participant.service';
@@ -29,7 +29,9 @@ export class UsersController {
   ) {}
 
   //* 사용자 탈퇴
+  @UseGuards(AuthGuard('jwt'))
   @Patch('/withdraw')
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '사용자 탈퇴' })
   @ApiResponse({
     status: 204,
@@ -38,7 +40,9 @@ export class UsersController {
   async withdraw() {}
 
   //* 사용자 삭제
+  @UseGuards(AuthGuard('jwt'))
   @Delete('/delete')
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '사용자 삭제' })
   @ApiResponse({
     status: 204,
@@ -80,6 +84,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/participants')
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '사용자 신청 현황 조회' })
   @ApiResponse({
     status: 200,
@@ -100,6 +105,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/meetings-creator')
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '사용자 개설 모임 조회' })
   @ApiResponse({ status: 200, description: '사용자 개설 모임 조회 성공' })
   async getMeetingsByUser(
@@ -118,6 +124,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/meetings')
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '사용자 참가 모임 조회' })
   @ApiResponse({
     status: 200,
@@ -137,6 +144,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/profile')
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '사용자 정보 조회' })
   @ApiResponse({
     status: 200,
@@ -152,6 +160,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Patch('/profile')
   @UseInterceptors(TransformInterceptor)
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '사용자 정보 수정' })
   async updateUser(
     @Req() req,
@@ -165,6 +174,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get('likes')
   // @UsePipes(ValidationPipe)
+  @ApiBearerAuth('jwt')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '좋아요 목록 조회' })
   async getLikes(
