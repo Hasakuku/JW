@@ -27,7 +27,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   ): Promise<any> {
     const userEmail = account._json.kakao_account.email;
     const getUser = await this.userService.getUserByEmail(userEmail);
-    console.log(typeof userEmail, userEmail, getUser);
+    // console.log(typeof userEmail, userEmail, getUser);
     if (!getUser) {
       const user = {
         // a: account._json.kakao_account,
