@@ -9,7 +9,7 @@ import { ReportsService } from './reports.service';
 export class ReportsController {
   constructor(private readonly reportService: ReportsService) {}
 
-  @Post()
+  @Post('/meetings')
   async createMeetingReport(
     @Body() createReportDto: CreateMeetingReportDto,
     @Req() req,
@@ -19,12 +19,12 @@ export class ReportsController {
     return { message: '모임 신고 완료' };
   }
 
-  @Get()
+  @Get('/meetings')
   async findAllMeetingReport(): Promise<object> {
     return await this.reportService.findAllMeetingReports();
   }
 
-  @Post()
+  @Post('/users')
   async createUserReport(
     @Body() createReportDto: CreateUserReportDto,
     @Req() req,
@@ -34,7 +34,7 @@ export class ReportsController {
     return { message: '유저 신고 완료' };
   }
 
-  @Get()
+  @Get('/users')
   async findAllUserReport(): Promise<object> {
     return await this.reportService.findAllUserReports();
   }
