@@ -25,6 +25,7 @@ async function bootstrap() {
     //   'http:43.201.9.57:3000',
     // ],
     origin: '*',
+    exposedHeaders: ['Authorization'],
     // credentials: true,
   });
 
