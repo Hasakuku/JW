@@ -164,6 +164,7 @@ export class MeetingsController {
     return { result };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임 목록 조회' })

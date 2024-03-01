@@ -42,14 +42,14 @@
       });
       function getMeetings() {
          // JWT 토큰을 쿠키에서 가져옵니다.
-         const jwt = document.cookie.split('; ').find(row => row.startsWith('jwt')).split('=')[1];
+         // const jwt = document.cookie.split('; ').find(row => row.startsWith('jwt')).split('=')[1];
          // const token = jwt ? jwt.split('=')[1] : '';
          // fetch API를 사용하여 GET 요청을 보냅니다.
          fetch('http://localhost:3000/api/v1/meetings', {
             method: 'GET',
             headers: {
                'Content-Type': 'application/json',
-               'Authorization': `Bearer ${token}`
+               // 'Authorization': `Bearer ${token}`
             }
          })
             .then(response => response.json())
