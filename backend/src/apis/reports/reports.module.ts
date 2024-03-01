@@ -6,6 +6,7 @@ import {
   UserReportRepository,
 } from './reports.repository';
 import { UserRepository } from '../users/users.repository';
+import { MeetingRepository } from '../meetings/meetings.repository';
 
 @Module({
   controllers: [ReportsController],
@@ -14,6 +15,7 @@ import { UserRepository } from '../users/users.repository';
     MeetingReportRepository,
     UserReportRepository,
     UserRepository,
+    MeetingRepository,
   ],
 })
 export class ReportsModule {}
