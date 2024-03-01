@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UseGuards,
   UseInterceptors,
   UsePipes,
@@ -164,7 +165,6 @@ export class MeetingsController {
     return { result };
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get()
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임 목록 조회' })
@@ -181,5 +181,11 @@ export class MeetingsController {
     }
     const result = await this.meetingsService.getMeetings(getMeetingsDto, user);
     return { result };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get()
+  async test(@Req() req, @Res() res) {
+    res.json(req.user);
   }
 }
