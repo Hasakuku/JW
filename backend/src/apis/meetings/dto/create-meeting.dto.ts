@@ -20,7 +20,6 @@ export class CreateMeetingDto {
 
   @ApiProperty({ example: '열정적' })
   @Optional()
-  @IsString()
   tag?: string;
 
   @ApiProperty({ example: '일본 도쿄' })
