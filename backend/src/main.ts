@@ -17,14 +17,15 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: [
-      'https://jwproject.vercel.app',
-      'http:localhost:3000',
-      'http:localhost:8080',
-      'http:43.201.9.57',
-      'http:43.201.9.57:3000',
-    ],
+    // origin: [
+    //   'https://jwproject.vercel.app',
+    //   'http:localhost:3000',
+    //   'http:localhost:8080',
+    //   'http:43.201.9.57',
+    //   'http:43.201.9.57:3000',
+    // ],
     // origin: '*',
+    origin: 'https://jwproject.vercel.app',
     exposedHeaders: ['Authorization'],
     credentials: true,
   });
