@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
@@ -18,7 +19,7 @@ export class CreateMeetingDto {
   title: string;
 
   @ApiProperty({ example: '열정적' })
-  @IsNotEmpty()
+  @Optional()
   @IsString()
   tag?: string;
 
