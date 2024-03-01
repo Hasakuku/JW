@@ -47,6 +47,7 @@ async function bootstrap() {
       },
       'jwt',
     )
+    .addTag('Auth')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api-docs', app, document);
