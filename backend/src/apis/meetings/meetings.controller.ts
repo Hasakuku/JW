@@ -184,7 +184,7 @@ export class MeetingsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get()
+  @Get('test')
   async test(@Req() req, @Res() res) {
     res.json(req.user);
   }
