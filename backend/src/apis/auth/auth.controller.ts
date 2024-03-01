@@ -99,7 +99,11 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
-    res.setHeader('Authorization', 'Bearer ' + accessToken);
+    res.cookie('jwt', accessToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
     res
       .status(201)
       .json({ result: res.header, message: authMessage.LOGIN_SUCCESS });
