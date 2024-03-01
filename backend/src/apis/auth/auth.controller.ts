@@ -60,7 +60,7 @@ export class AuthController {
       secure: true,
     });
     // await res.json({ token: req.user.token });
-    res.redirect(process.env.FRONT_URI);
+    // res.redirect(process.env.FRONT_URI);
     // res.redirect('http://localhost:3000');
   }
   //*카카오 연결 끊기
