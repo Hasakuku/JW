@@ -24,7 +24,7 @@ export class Meeting extends BaseEntity {
   @Column({ length: 100 })
   title: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50, default: 0 })
   tag?: string;
 
   @Column()
