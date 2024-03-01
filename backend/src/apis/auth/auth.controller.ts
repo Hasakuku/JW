@@ -57,7 +57,7 @@ export class AuthController {
     res.cookie('jwt', req.user.token, {
       httpOnly: true,
       sameSite: 'none',
-      secure: 'true',
+      secure: true,
     });
     // await res.json({ token: req.user.token });
     res.redirect(process.env.FRONT_URI);
