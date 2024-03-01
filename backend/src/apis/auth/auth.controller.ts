@@ -52,13 +52,13 @@ export class AuthController {
   @Get('kakao/login')
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLogin(@Req() req, @Res() res) {
-    res.setHeader('Authorization', `'Bearer ${req.user.token}`);
+    // res.setHeader('Authorization', `'Bearer ${req.user.token}`);
 
-    // res.cookie('jwt', req.user.token, {
-    //   httpOnly: true,
-    //   sameSite: 'none',
-    //   secure: true,
-    // });
+    res.cookie('jwt', req.user.token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
     // await res.json({ token: req.user.token });
     return res.redirect(process.env.FRONT_URI);
     // res.redirect('http://localhost:3000');
@@ -99,14 +99,14 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const accessToken = await this.authService.login(authCredentialDto);
-    // res.cookie('jwt', accessToken, {
-    //   httpOnly: true,
-    //   sameSite: 'none',
-    //   secure: true,
-    // });
+    res.cookie('jwt', accessToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
 
     res
-      .setHeader('Authorization', `'Bearer ${accessToken}`)
+      // .setHeader('Authorization', `'Bearer ${accessToken}`)
       .status(201)
       .json({ result: res.header, message: authMessage.LOGIN_SUCCESS });
   }
