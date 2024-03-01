@@ -1,0 +1,155 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Client</title>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const socket = io('http://localhost:3000');
+
+      socket.on('connect', () => {
+        console.log(`Connected: ${socket.id}`);
+      });
+
+      socket.on('disconnect', () => {
+        console.log(`Disconnected: ${socket.id}`);
+      });
+
+      socket.on('newChatRoom', (chatRoom) => {
+        console.log('New chat room created:', chatRoom);
+      });
+
+      socket.on('newMessage', (message) => {
+        console.log('New message:', message);
+      });
+
+      socket.on('joinedRoom', (room) => {
+        console.log(`Joined room: ${room}`);
+      });
+
+      socket.on('leftRoom', (room) => {
+        console.log(`Left room: ${room}`);
+      });
+
+      document.getElementById('createChatRoom').addEventListener('click', () => {
+        const name = document.getElementById('roomName').value;
+        const description = document.getElementById('roomDescription').value;
+        const creator = document.getElementById('roomCreator').value;
+
+        socket.emit('createChatRoom', { name, description, creator });
+      });
+
+      document.getElementById('sendMessage').addEventListener('click', () => {
+        const content = document.getElementById('messageContent').value;
+        const sender = document.getElementById('messageSender').value;
+        const chatRoom = document.getElementById('messageChatRoom').value;
+
+        socket.emit('sendMessage', { content, sender, chatRoom });
+      });
+
+      document.getElementById('joinRoom').addEventListener('click', () => {
+        const room = document.getElementById('joinRoomId').value;
+
+        socket.emit('joinRoom', room);
+      });
+
+      document.getElementById('leaveRoom').addEventListener('click', () => {
+        const room = document.getElementById('leaveRoomId').value;
+
+        socket.emit('leaveRoom', room);
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>Chat Client</h1>
+
+  <h2>Create Chat Room</h2>
+  <input id="roomName" type="text" placeholder="Room Name">
+  <input id="roomDescription" type="text" placeholder="Room Description">
+  <input id="roomCreator" type="text" placeholder="Room Creator">
+  <button id="createChatRoom">Create Chat Room</button>
+
+  <h2>Send Message</h2>
+  <input id="messageContent" type="text" placeholder="Message Content">
+  <input id="messageSender" type="text" placeholder="Message Sender">
+  <input id="messageChatRoom" type="text" placeholder="Chat Room ID">
+  <button id="sendMessage">Send Message</button>
+
+  <h2>Join Room</h2>
+  <input id="joinRoomId" type="text" placeholder="Room ID">
+  <button id="joinRoom">Join Room</button>
+
+  <h2>Leave Room</h2>
+  <input id="leaveRoomId" type="text" placeholder="Room ID">
+  <button id="leaveRoom">Leave Room</button>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Chat Client</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+
+<body>
+  <h1>Chat Client</h1>
+  <input id="roomName" type="text" placeholder="Room Name">
+  <input id="roomDesc" type="text" placeholder="Room Description">
+  <button id="createRoom">Create Room</button>
+  <hr>
+  <input id="roomId" type="text" placeholder="Room ID">
+  <button id="joinRoom">Join Room</button>
+  <button id="leaveRoom">Leave Room</button>
+  <hr>
+  <input id="messageContent" type="text" placeholder="Message Content">
+  <button id="sendMessage">Send Message</button>
+  <hr>
+  <div id="messages"></div>
+
+  <script>
+    const socket = io('http://localhost:3000');
+    const messagesDiv = document.getElementById('messages');
+
+    document.getElementById('createRoom').addEventListener('click', () => {
+      const name = document.getElementById('roomName').value;
+      const description = document.getElementById('roomDesc').value;
+      socket.emit('createChatRoom', { name, description });
+    });
+
+    document.getElementById('joinRoom').addEventListener('click', () => {
+      const roomId = document.getElementById('roomId').value;
+      socket.emit('joinRoom', roomId);
+    });
+
+    document.getElementById('leaveRoom').addEventListener('click', () => {
+      const roomId = document.getElementById('roomId').value;
+      socket.emit('leaveRoom', roomId);
+    });
+
+    document.getElementById('sendMessage').addEventListener('click', () => {
+      const content = document.getElementById('messageContent').value;
+      const chatRoomId = document.getElementById('roomId').value;
+      socket.emit('sendMessage', { content, chatRoomId });
+    });
+
+    socket.on('newChatRoom', (room) => {
+      messagesDiv.innerHTML += `<p> ***채팅방 개설***</br> ➡Id: ${room.id} </br> ➡방 이름: ${room.name} </br> *** 채팅방에 입장해주세요 ***</p>`;
+    });
+
+    socket.on('newMessage', (message) => {
+      messagesDiv.innerHTML += `<p>😀${message.sender??'익명'} </br> 🗨${message.content}</p>`;
+    });
+
+    socket.on('joinedRoom', (room) => {
+      messagesDiv.innerHTML += `<p>-----${room}번 채팅방 입장 ${'(❁´◡`❁)'}-----</p>`;
+    });
+
+    socket.on('leftRoom', (room) => {
+      messagesDiv.innerHTML += `<p>-----${room}번 채팅방 퇴장 (/ω＼)-----</p>`;
+    });
+  </script>
+</body>
+
+</html>

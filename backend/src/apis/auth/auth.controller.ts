@@ -52,10 +52,14 @@ export class AuthController {
   @Get('kakao/login')
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLogin(@Req() req, @Res() res) {
-    // res.cookie('jwt', req.user.token, {
-    //   httpOnly: true,
-    // });
-    res.setHeader('Authorization', `'Bearer ${req.user.token}`);
+    // await res.setHeader('Authorization', `'Bearer ${req.user.token}`);
+
+    res.cookie('jwt', req.user.token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: 'true',
+    });
+    // await res.json({ token: req.user.token });
     res.redirect(process.env.FRONT_URI);
     // res.redirect('http://localhost:3000');
   }
