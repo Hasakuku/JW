@@ -10,7 +10,7 @@ import {
 
 export enum ReportCategory {
   SPAM = 'SPAM',
-  HARASSMENT = 'HARASSMENT',
+  HARASSMENT = '비방/욕설',
   INAPPROPRIATE_CONTENT = 'INAPPROPRIATE_CONTENT',
 }
 

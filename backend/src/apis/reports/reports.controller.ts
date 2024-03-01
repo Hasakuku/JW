@@ -4,7 +4,7 @@ import {
   CreateUserReportDto,
 } from './dto/create-reports.dto';
 import { ReportsService } from './reports.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Reports')
@@ -15,6 +15,22 @@ export class ReportsController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/meetings')
   @ApiBearerAuth('jwt')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        category: { type: 'string' },
+        content: { type: 'string' },
+        meetingId: { type: 'number' },
+      },
+      required: ['category', 'content'],
+      example: {
+        category: '비방/욕설',
+        content: '예시 설명',
+        meetingId: '1',
+      },
+    },
+  })
   async createMeetingReport(
     @Body() createReportDto: CreateMeetingReportDto,
     @Body('meetingId') meetingId: number,
@@ -39,6 +55,22 @@ export class ReportsController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/users')
   @ApiBearerAuth('jwt')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        category: { type: 'string' },
+        content: { type: 'string' },
+        userId: { type: 'number' },
+      },
+      required: ['category', 'content'],
+      example: {
+        category: '비방/욕설',
+        content: '예시 설명',
+        userId: '1',
+      },
+    },
+  })
   async createUserReport(
     @Body() createReportDto: CreateUserReportDto,
     @Body('userId') userId: number,
