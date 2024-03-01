@@ -32,6 +32,7 @@ import { GetMeetingsPipe } from './pipes/getMeetings.pipe';
 import { UserService } from '../users/users.service';
 import { verify } from 'jsonwebtoken';
 import { PaginationDto } from 'src/constant/pagination.dto';
+import { ExtractJwt } from 'passport-jwt';
 
 @ApiTags('Meetings')
 @Controller('meetings')
@@ -156,7 +157,8 @@ export class MeetingsController {
     @Req() req,
   ): Promise<object> {
     let user;
-    const token = req.cookies['jwt'];
+    // const token = req.cookies['jwt'];
+    const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 
     if (token) {
       user = verify(token, process.env.JWT_SECRET);
@@ -174,7 +176,8 @@ export class MeetingsController {
     getMeetingsDto: GetMeetingsDto,
   ): Promise<object> {
     let user;
-    const token = req.cookies['jwt'];
+    // const token = req.cookies['jwt'];
+    const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 
     if (token) {
       user = verify(token, process.env.JWT_SECRET);

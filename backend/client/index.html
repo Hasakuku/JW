@@ -17,6 +17,7 @@
    <a href="http://localhost:3000/api/v1/auth/kakao/withdraw">withdrawal</a>
    <button onclick="fetchImage()">이미지 가져오기</button>
    <button onclick="getMeetings()">Get Meetings</button>
+   <button onclick="getTest()">Get Test</button>
    <img id="image" src="1703261972932.png" alt="">
    <img id="image" src="1703269457229.png" alt="">
    <img id="image" src="1703269459632.png" alt="">
@@ -46,6 +47,29 @@
          // const token = jwt ? jwt.split('=')[1] : '';
          // fetch API를 사용하여 GET 요청을 보냅니다.
          fetch('http://localhost:3000/api/v1/meetings', {
+            method: 'GET',
+            headers: {
+               'Content-Type': 'application/json',
+               // 'Authorization': `Bearer ${token}`
+            }
+         })
+            .then(response => response.json())
+            .then(data => {
+               // 결과를 콘솔에 출력합니다.
+               console.log(data);
+            })
+            .catch((error) => {
+               console.error('Error:', error);
+            });
+      }
+      function getTest() {
+         // JWT 토큰을 쿠키에서 가져옵니다.
+         // console.log('here',document.)
+         // const jwt = document.cookie.split('; ').find(row => row.startsWith('jwt')).split('=')[1];
+         
+         // const token = jwt ? jwt.split('=')[1] : '';
+         // fetch API를 사용하여 GET 요청을 보냅니다.
+         fetch('http://localhost:3000/api/v1/meetings/test', {
             method: 'GET',
             headers: {
                'Content-Type': 'application/json',
