@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-kakao';
 import { Gender } from 'src/apis/users/entities/user.entity';
@@ -13,8 +13,8 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   ) {
     super({
       clientID: '3f9afa0045d4d2e28e15fe477c6f683a',
-      callbackURL: `https://jwpj.net/api/v1/auth/kakao/login`,
-      // callbackURL: `http://localhost:3000/api/v1/auth/kakao/login`,
+      // callbackURL: `https://jwpj.net/api/v1/auth/kakao/login`,
+      callbackURL: `http://localhost:3000/api/v1/auth/kakao/login`,
       clientSecret: '',
       // scope: ['account_email', 'profile_nickname'],
     });
@@ -25,9 +25,9 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     refreshToken: string,
     account: any,
   ): Promise<any> {
-    const getUser = await this.userService.getUserByEmail(
-      account._json.kakao_account.email,
-    );
+    const userEmail = account._json.kakao_account.email;
+    const getUser = await this.userService.getUserByEmail(userEmail);
+    console.log(typeof userEmail, userEmail, getUser);
     if (!getUser) {
       const user = {
         // a: account._json.kakao_account,

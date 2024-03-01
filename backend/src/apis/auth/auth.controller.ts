@@ -59,7 +59,7 @@ export class AuthController {
       sameSite: 'none',
       secure: true,
     });
-    res.json({ token: req.user.token });
+    // res.json({ token: req.user.token });
     return res.redirect(process.env.FRONT_URI);
     // res.redirect('http://localhost:3000');
   }

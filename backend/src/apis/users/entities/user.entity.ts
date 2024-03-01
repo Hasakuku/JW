@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail } from 'class-validator';
 import * as crypto from 'crypto';
 import { Category } from 'src/apis/categories/entity/categories.entity';
 import { Meeting } from 'src/apis/meetings/entities/meeting.entity';
@@ -44,6 +45,7 @@ export class User extends BaseEntity {
 
   @ApiProperty()
   @Column({ length: 50, unique: true })
+  @IsEmail()
   email: string;
 
   @ApiProperty()
