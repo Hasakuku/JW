@@ -6,6 +6,7 @@ import {
 import { MeetingReport, UserReport } from './entity/reports.entity';
 import { UserRepository } from '../users/users.repository';
 import { MeetingRepository } from '../meetings/meetings.repository';
+import { PaginationDto } from 'src/constant/pagination.dto';
 
 @Injectable()
 export class ReportsService {
@@ -33,8 +34,14 @@ export class ReportsService {
     return;
   }
 
-  async findAllMeetingReports(): Promise<MeetingReport[]> {
-    return await this.meetingReportRepository.find();
+  async findAllMeetingReports(
+    paginationDto: PaginationDto,
+  ): Promise<MeetingReport[]> {
+    const { page = 1, perPage = 10 } = paginationDto;
+    return await this.meetingReportRepository.find({
+      skip: (page - 1) * perPage,
+      take: perPage,
+    });
   }
 
   async createUserReport(
@@ -54,7 +61,13 @@ export class ReportsService {
     return;
   }
 
-  async findAllUserReports(): Promise<UserReport[]> {
-    return await this.userReportRepository.find();
+  async findAllUserReports(
+    paginationDto: PaginationDto,
+  ): Promise<UserReport[]> {
+    const { page = 1, perPage = 10 } = paginationDto;
+    return await this.userReportRepository.find({
+      skip: (page - 1) * perPage,
+      take: perPage,
+    });
   }
 }

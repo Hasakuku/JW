@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ReportsService } from './reports.service';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { PaginationDto } from 'src/constant/pagination.dto';
 
 @ApiTags('Reports')
 @Controller('reports')
@@ -21,6 +22,7 @@ export class ReportsController {
       },
       required: ['content'],
       example: {
+        meetingId: 1,
         content: '스팸',
       },
     },
@@ -42,8 +44,9 @@ export class ReportsController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/meetings')
   @ApiBearerAuth('jwt')
-  async findAllMeetingReport(): Promise<object> {
-    return await this.reportService.findAllMeetingReports();
+  @ApiQuery({ type: PaginationDto })
+  async findAllMeetingReport(paginationDto: PaginationDto): Promise<object> {
+    return await this.reportService.findAllMeetingReports(paginationDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -59,9 +62,8 @@ export class ReportsController {
       },
       required: ['category', 'content'],
       example: {
-        category: '스팸',
         content: '예시 설명',
-        userId: '1',
+        userId: 1,
       },
     },
   })
@@ -78,7 +80,8 @@ export class ReportsController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/users')
   @ApiBearerAuth('jwt')
-  async findAllUserReport(): Promise<object> {
-    return await this.reportService.findAllUserReports();
+  @ApiQuery({ type: PaginationDto })
+  async findAllUserReport(paginationDto: PaginationDto): Promise<object> {
+    return await this.reportService.findAllUserReports(paginationDto);
   }
 }
