@@ -139,14 +139,15 @@ export class UserService {
   ): Promise<object[]> {
     const { page = 1, perPage = 10 } = paginationDto;
     const userId = user.userId;
-    const getUser = await this.usersRepository.findOne({ where: { userId } });
-    const getMeetings = await this.meetingRepository.find({
-      where: { user: getUser },
+    const getUser = await this.usersRepository.findOne({
+      where: { userId },
       relations: ['meetings'],
-      skip: (page - 1) * perPage,
-      take: perPage,
     });
-    return getMeetings;
+
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    const result = getUser.meetings.slice(start, end);
+    return result;
   }
 
   async addLike(userId: number, meetingId: number): Promise<void> {

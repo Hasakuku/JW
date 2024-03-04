@@ -101,7 +101,7 @@ export class MeetingsController {
   @ApiParam({ name: 'id', required: true, example: 1 })
   async getParticipantsByMeetingId(
     @Param('id', ParseIntPipe) id: number,
-    @Query() paginationDto?: PaginationDto,
+    @Query() paginationDto: PaginationDto,
   ): Promise<object> {
     const result = await this.participantService.getParticipantsByMeetingId(
       id,
