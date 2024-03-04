@@ -53,6 +53,18 @@
                // 'Authorization': `Bearer ${token}`
             }
          })
+            .then(response => {
+               
+               const authHeader = response.headers.get('Authorization');
+               console.log(authHeader)
+               if (authHeader && authHeader.startsWith('Bearer ')) {
+                  var token = authHeader.slice(7);
+
+                  // 토큰을 출력하거나 다른 요청에 사용합니다.
+                  console.log(token);
+               }
+            }
+            )
             .then(response => response.json())
             .then(data => {
                // 결과를 콘솔에 출력합니다.
@@ -64,9 +76,9 @@
       }
       function getTest() {
          // JWT 토큰을 쿠키에서 가져옵니다.
-         // console.log('here',document.)
+
          // const jwt = document.cookie.split('; ').find(row => row.startsWith('jwt')).split('=')[1];
-         
+
          // const token = jwt ? jwt.split('=')[1] : '';
          // fetch API를 사용하여 GET 요청을 보냅니다.
          fetch('http://localhost:3000/api/v1/meetings/test', {

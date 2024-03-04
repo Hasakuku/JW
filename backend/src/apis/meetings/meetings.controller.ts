@@ -175,6 +175,7 @@ export class MeetingsController {
     @Query(GetMeetingsPipe)
     getMeetingsDto: GetMeetingsDto,
   ): Promise<object> {
+    // console.log(req.headers)
     let user;
     // const token = req.cookies['jwt'];
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);

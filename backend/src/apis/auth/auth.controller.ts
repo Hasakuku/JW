@@ -52,7 +52,7 @@ export class AuthController {
   @Get('kakao/login')
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLogin(@Req() req, @Res() res) {
-    res.setHeader('Authorization', `'Bearer ${req.user.token}`);
+    // res.setHeader('Authorization', `'Bearer ${req.user.token}`);
 
     res.cookie('jwt', req.user.token, {
       httpOnly: true,
@@ -60,8 +60,8 @@ export class AuthController {
       secure: true,
     });
     // res.json({ token: req.user.token });
-    // return res.redirect(process.env.FRONT_URI);
-    res.redirect('http://localhost:3000');
+    return res.redirect(process.env.FRONT_URI);
+    // res.redirect('http://localhost:3000');
   }
   //*카카오 연결 끊기
   @Get('kakao/withdraw')
