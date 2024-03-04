@@ -143,8 +143,12 @@ export class ParticipantService {
       .createQueryBuilder('participant')
       .select([
         'participant.participantId AS participantId',
+        'participant.description AS description',
         'participant.status AS status',
         'user.userId AS userId',
+        'user.username AS username',
+        'user.nickname AS nickname',
+        'user.profileImage AS profileImage',
       ])
       .leftJoin('participant.user', 'user')
       .where('participant.meetingId = :meetingId', { meetingId });
@@ -179,8 +183,10 @@ export class ParticipantService {
       .createQueryBuilder('participant')
       .select([
         'participant.participantId AS participantId',
+        'participant.description AS description',
         'user.userId AS userId',
         'user.nickname AS nickname',
+        'user.username AS username',
         'user.profileImage AS profileImage',
       ])
       .leftJoin('participant.user', 'user')

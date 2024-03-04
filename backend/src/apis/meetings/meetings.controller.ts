@@ -111,7 +111,7 @@ export class MeetingsController {
   }
 
   @Get(':id/attenders')
-  @UsePipes(ValidationPipe)
+  // @UsePipes(ValidationPipe)
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임의 참가자 목록 조회' })
   @ApiParam({ name: 'id', required: true, example: 1 })
