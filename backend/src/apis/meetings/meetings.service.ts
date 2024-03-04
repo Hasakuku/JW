@@ -79,7 +79,8 @@ export class MeetingsService {
       member_limit: meeting.member_limit,
       created_at: meeting.created_at,
       host: meeting.user,
-      participants_number: meeting.participants.length,
+      participants_number: meeting.participants.length + 1,
+      participants: meeting.participants,
       isLiked,
     };
     return result;
@@ -223,7 +224,7 @@ export class MeetingsService {
         member_limit: meeting.member_limit,
         created_at: meeting.created_at,
         host,
-        participants_number: meeting.participants.length,
+        participants_number: meeting.participants.length + 1,
         isLiked,
         isActivated,
       };

@@ -35,13 +35,18 @@ export class ParticipantController {
   @ApiOperation({ summary: '참가 상태 생성' })
   @ApiBody({
     description: '참가 상태 생성',
-    examples: { 생성: { value: { meetingId: 1 } } },
+    examples: { 생성: { value: { meetingId: 1, description: '안녕하세요' } } },
   })
   async createParticipant(
     @Req() req,
     @Body('meetingId') meetingId: number,
+    @Body('description') description: string,
   ): Promise<object> {
-    await this.participantService.createParticipant(req.user, meetingId);
+    await this.participantService.createParticipant(
+      req.user,
+      meetingId,
+      description,
+    );
     return { message: '생성 성공' };
   }
 

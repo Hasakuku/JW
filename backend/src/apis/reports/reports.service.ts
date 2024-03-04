@@ -3,10 +3,6 @@ import {
   MeetingReportRepository,
   UserReportRepository,
 } from './reports.repository';
-import {
-  CreateMeetingReportDto,
-  CreateUserReportDto,
-} from './dto/create-reports.dto';
 import { MeetingReport, UserReport } from './entity/reports.entity';
 import { UserRepository } from '../users/users.repository';
 import { MeetingRepository } from '../meetings/meetings.repository';
@@ -21,7 +17,7 @@ export class ReportsService {
   ) {}
 
   async createMeetingReport(
-    createMeetingReportDto: CreateMeetingReportDto,
+    content: string,
     userId: number,
     meetingId: number,
   ): Promise<void> {
@@ -29,7 +25,8 @@ export class ReportsService {
     const meeting = await this.meetingRepository.findOne({
       where: { meetingId },
     });
-    const report = this.meetingReportRepository.create(createMeetingReportDto);
+    const report = new MeetingReport();
+    report.content = content;
     report.reporter = user;
     report.meeting = meeting;
     await this.meetingReportRepository.save(report);
@@ -41,7 +38,7 @@ export class ReportsService {
   }
 
   async createUserReport(
-    createUserReportDto: CreateUserReportDto,
+    content: string,
     reporterId: number,
     userId: number,
   ): Promise<void> {
@@ -49,7 +46,8 @@ export class ReportsService {
       where: { userId: reporterId },
     });
     const user = await this.userRepository.findOne({ where: { userId } });
-    const report = this.userReportRepository.create(createUserReportDto);
+    const report = new UserReport();
+    report.content = content;
     report.reporter = reporter;
     report.reportedUser = user;
     await this.userReportRepository.save(report);

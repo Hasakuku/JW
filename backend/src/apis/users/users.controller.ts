@@ -12,7 +12,13 @@ import {
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { TransformInterceptor } from 'src/common/interceptors/response-type.interceptor';
 import { ParticipantService } from '../participants/participant.service';
@@ -153,6 +159,20 @@ export class UsersController {
   })
   async getUser(@Req() req): Promise<object> {
     const result = await this.userService.getUserById(req.user.userId);
+    return { result };
+  }
+
+  //* 다른 사용자 정보 조회
+  @Get('/profile-others')
+  @UseInterceptors(TransformInterceptor)
+  @ApiOperation({ summary: '다른 사용자 정보 조회' })
+  @ApiResponse({
+    status: 200,
+    description: '다른 사용자 정보 조회 성공',
+    type: User,
+  })
+  async getOtherUser(@Req() req): Promise<object> {
+    const result = await this.userService.getOtherUserById(req.user.userId);
     return { result };
   }
 

@@ -101,6 +101,19 @@ export class UserService {
     });
     return getUser;
   }
+  async getOtherUserById(userId: number): Promise<object> {
+    const getUser = await this.usersRepository.findOne({
+      where: { userId },
+      relations: ['categories', 'meetings'],
+    });
+    const result = {
+      email: getUser.email,
+      nickname: getUser.nickname,
+      profileImage: getUser.profileImage,
+      categories: getUser.categories,
+    };
+    return result;
+  }
 
   async getUserByEmail(email: string): Promise<User> {
     const getUser = await this.usersRepository.findOne({

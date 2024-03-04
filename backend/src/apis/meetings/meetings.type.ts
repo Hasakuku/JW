@@ -1,4 +1,5 @@
 import { Category } from '../categories/entity/categories.entity';
+import { Participant } from '../participants/entity/participant.entity';
 import { User } from '../users/entities/user.entity';
 
 export type MeetingDetailResponse = {
@@ -13,6 +14,7 @@ export type MeetingDetailResponse = {
   created_at: Date;
   host: User;
   participants_number: number;
+  participants: Participant[];
   isLiked: boolean;
 };
 

@@ -21,7 +21,11 @@ export class ParticipantService {
     private userRepository: UserRepository,
   ) {}
 
-  async createParticipant(user: User, meetingId: number): Promise<Participant> {
+  async createParticipant(
+    user: User,
+    meetingId: number,
+    description: string = '안녕하세요',
+  ): Promise<Participant> {
     const userId = user.userId;
     const getUser = await this.userRepository.findOneBy({ userId });
     const getMeeting = await this.meetingRepository.findOneBy({ meetingId });
@@ -29,6 +33,7 @@ export class ParticipantService {
     const participant = new Participant();
     participant.user = getUser;
     participant.meeting = getMeeting;
+    participant.description = description;
 
     await this.participantRepository.save(participant);
     return participant;
@@ -91,7 +96,7 @@ export class ParticipantService {
     paginationDto: PaginationDto,
   ): Promise<Participant[]> {
     const { page = 1, perPage = 10 } = paginationDto;
-    return this.participantRepository.find({
+    return await this.participantRepository.find({
       where: {
         user: { userId },
         status: In([
@@ -100,6 +105,7 @@ export class ParticipantService {
           ParticipantStatus.REJECTED,
         ]),
       },
+      relations: ['meeting'],
       skip: (page - 1) * perPage,
       take: perPage,
     });

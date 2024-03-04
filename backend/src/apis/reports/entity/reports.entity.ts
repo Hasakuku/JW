@@ -8,20 +8,17 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-export enum ReportCategory {
-  SPAM = 'SPAM',
-  HARASSMENT = '비방/욕설',
-  INAPPROPRIATE_CONTENT = 'INAPPROPRIATE_CONTENT',
-}
+// export enum ReportCategory {
+//   SPAM = '스팸',
+//   HARASSMENT = '비방/욕설',
+//   INAPPROPRIATE_CONTENT = 'INAPPROPRIATE_CONTENT',
+// }
 
 // 모임 신고 엔티티
 @Entity()
 export class MeetingReport {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ type: 'enum', enum: ReportCategory })
-  category: ReportCategory;
 
   @Column()
   content: string;
@@ -41,8 +38,8 @@ export class UserReport {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'enum', enum: ReportCategory })
-  category: ReportCategory;
+  // @Column({ type: 'enum', enum: ReportCategory })
+  // category: ReportCategory;
 
   @Column()
   content: string;

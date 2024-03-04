@@ -1,8 +1,4 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import {
-  CreateMeetingReportDto,
-  CreateUserReportDto,
-} from './dto/create-reports.dto';
 import { ReportsService } from './reports.service';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,22 +19,20 @@ export class ReportsController {
         content: { type: 'string' },
         meetingId: { type: 'number' },
       },
-      required: ['category', 'content'],
+      required: ['content'],
       example: {
-        category: '비방/욕설',
-        content: '예시 설명',
-        meetingId: '1',
+        content: '스팸',
       },
     },
   })
   async createMeetingReport(
-    @Body() createReportDto: CreateMeetingReportDto,
+    @Body('content') content: string,
     @Body('meetingId') meetingId: number,
     @Req() req,
   ): Promise<object> {
     const reporterId = req.user.userId;
     await this.reportService.createMeetingReport(
-      createReportDto,
+      content,
       reporterId,
       meetingId,
     );
@@ -72,16 +66,12 @@ export class ReportsController {
     },
   })
   async createUserReport(
-    @Body() createReportDto: CreateUserReportDto,
+    @Body('content') content: string,
     @Body('userId') userId: number,
     @Req() req,
   ): Promise<object> {
     const reporterId = req.user.userId;
-    await this.reportService.createUserReport(
-      createReportDto,
-      reporterId,
-      userId,
-    );
+    await this.reportService.createUserReport(content, reporterId, userId);
     return { message: '유저 신고 완료' };
   }
 

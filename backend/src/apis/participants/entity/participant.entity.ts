@@ -33,6 +33,9 @@ export class Participant extends BaseEntity {
   @JoinColumn({ name: 'userId' })
   user: User;
 
+  @Column()
+  description: string;
+
   @Column({
     type: 'enum',
     enum: ParticipantStatus,
