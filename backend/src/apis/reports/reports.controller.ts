@@ -65,7 +65,7 @@ export class ReportsController {
       },
       required: ['category', 'content'],
       example: {
-        category: '비방/욕설',
+        category: '스팸',
         content: '예시 설명',
         userId: '1',
       },
