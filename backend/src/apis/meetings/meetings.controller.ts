@@ -160,7 +160,6 @@ export class MeetingsController {
     let user;
     // const token = req.cookies['jwt'];
     const token = req.headers.authorization?.split(' ')[1];
-
     if (token) {
       user = verify(token, process.env.JWT_SECRET);
     }
