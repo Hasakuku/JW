@@ -233,7 +233,7 @@ export class MeetingsService {
       };
       return result;
     });
-    console.log(user);
+
     return meetingsWithLikes;
   }
 

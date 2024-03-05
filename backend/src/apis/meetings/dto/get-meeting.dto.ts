@@ -57,7 +57,7 @@ export class GetMeetingsDto {
   member_max?: number;
 
   @ApiProperty({
-    example: formatDate(new Date()),
+    example: formatDate(new Date(1900, 0, 1)),
     required: false,
     default: formatDate(new Date()),
   })
