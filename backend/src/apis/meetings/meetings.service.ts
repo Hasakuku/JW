@@ -63,9 +63,12 @@ export class MeetingsService {
       })
       .getRawMany();
 
-    const isLiked = meeting.likes.some(
-      (meetingUser) => meetingUser.userId === user.userId,
-    );
+    let isLiked;
+    if (user) {
+      isLiked = meeting.likes.some(
+        (meetingUser) => meetingUser.userId === user.userId,
+      );
+    }
 
     meeting.participants = participants;
     const result: MeetingDetailResponse = {
@@ -81,7 +84,7 @@ export class MeetingsService {
       host: meeting.user,
       participants_number: meeting.participants.length + 1,
       participants: meeting.participants,
-      isLiked,
+      isLiked: isLiked ?? false,
     };
     return result;
   }

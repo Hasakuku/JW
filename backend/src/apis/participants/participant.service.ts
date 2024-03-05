@@ -50,7 +50,7 @@ export class ParticipantService {
       where: { participantId },
       relations: ['meeting'],
     });
-    console.log(participant, updatedParticipant);
+
     if (!participant) {
       throw new NotFoundException('존재하지 않는 participantId 입니다.');
     }
