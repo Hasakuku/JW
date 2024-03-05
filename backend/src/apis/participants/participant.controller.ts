@@ -80,7 +80,25 @@ export class ParticipantController {
       수락: {
         summary: '참가 상태 수락',
         value: {
-          status: 'attended',
+          status: ParticipantStatus.ATTENDED,
+        },
+      },
+      취소: {
+        summary: '참가 상태 취소',
+        value: {
+          status: ParticipantStatus.CANCELED,
+        },
+      },
+      대기: {
+        summary: '참가 상태 대기',
+        value: {
+          status: ParticipantStatus.PENDING,
+        },
+      },
+      거절: {
+        summary: '참가 상태 거절',
+        value: {
+          status: ParticipantStatus.REJECTED,
         },
       },
     },

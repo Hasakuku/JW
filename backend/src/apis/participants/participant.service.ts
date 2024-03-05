@@ -48,20 +48,20 @@ export class ParticipantService {
   ): Promise<Participant> {
     const participant = await this.participantRepository.findOne({
       where: { participantId },
-      relations: ['meetingId'],
+      relations: ['meeting'],
     });
+    console.log(participant, updatedParticipant);
     if (!participant) {
       throw new NotFoundException('존재하지 않는 participantId 입니다.');
     }
 
     if (
       updatedParticipant !== ParticipantStatus.ATTENDED ||
-      !this.meetingIsFull(participant.meeting.meetingId)
+      !(await this.meetingIsFull(participant.meeting.meetingId))
     ) {
       participant.status = updatedParticipant;
       return await this.participantRepository.save(participant);
-    }
-    throw new BadRequestException('잘못된 요청입니다.');
+    } else throw new BadRequestException('잘못된 요청입니다.');
   }
 
   async meetingIsFull(meetingId: number): Promise<boolean> {
