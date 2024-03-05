@@ -208,9 +208,12 @@ export class MeetingsService {
           meetingDate.getMonth() === now.getMonth() &&
           meetingDate.getDate() < now.getDate())
       );
-      const isLiked = meeting.likes.some(
-        (meetingUser) => meetingUser.userId === user.userId,
-      );
+      let isLiked;
+      if (user) {
+        isLiked = meeting.likes.some(
+          (meetingUser) => meetingUser.userId === user.userId,
+        );
+      }
       const host = {
         userId: meeting.user.userId,
         username: meeting.user.username,
