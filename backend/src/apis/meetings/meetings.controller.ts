@@ -151,7 +151,7 @@ export class MeetingsController {
   @Get('/:id')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임 상세 조회' })
-  // @ApiBearerAuth('jwt')
+  @ApiBearerAuth('jwt')
   @ApiParam({ name: 'id', required: true, example: 1 })
   async getMeetingById(
     @Param('id', ParseIntPipe) id,
