@@ -12,6 +12,7 @@ import { User } from '../users/entities/user.entity';
 import { CategoryRepository } from '../categories/categories.repository';
 import { ParticipantRepository } from '../participants/participant.repository';
 import { MeetingDetailResponse, MeetingListResponse } from './meetings.type';
+import { UserRepository } from '../users/users.repository';
 
 @Injectable()
 export class MeetingsService {
@@ -19,6 +20,7 @@ export class MeetingsService {
     private readonly meetingRepository: MeetingRepository,
     private readonly categoryRepository: CategoryRepository,
     private readonly participantRepository: ParticipantRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   //* 모임 생성
@@ -65,8 +67,16 @@ export class MeetingsService {
 
     let isLiked;
     if (user) {
-      isLiked = meeting.likes.some(
-        (meetingUser) => meetingUser.userId === user.userId,
+      // isLiked = meeting.likes.some(
+      //   (meetingUser) => meetingUser.userId === user.userId,
+      // );
+      const getUser = await this.userRepository.findOne({
+        where: { userId: user.userId },
+        relations: ['likes'],
+      });
+      console.log(getUser);
+      isLiked = getUser.likes.some(
+        (likes) => likes.meetingId === meeting.meetingId,
       );
     }
 
@@ -120,6 +130,12 @@ export class MeetingsService {
     }: GetMeetingsDto,
     user?: User,
   ) {
+    let getUser;
+    if (user)
+      getUser = await this.userRepository.findOne({
+        where: { userId: user.userId },
+        relations: ['likes'],
+      });
     let query = this.meetingRepository
       .createQueryBuilder('meeting')
       .leftJoinAndSelect('meeting.user', 'user')
@@ -210,8 +226,11 @@ export class MeetingsService {
       );
       let isLiked;
       if (user) {
-        isLiked = meeting.likes.some(
-          (meetingUser) => meetingUser.userId === user.userId,
+        // isLiked = meeting.likes.some(
+        //   (meetingUser) => meetingUser.userId === user.userId,
+        // );
+        isLiked = getUser.likes.some(
+          (likes) => likes.meetingId === meeting.meetingId,
         );
       }
       const host = {
@@ -231,7 +250,7 @@ export class MeetingsService {
         created_at: meeting.created_at,
         host,
         participants_number: meeting.participants.length + 1,
-        isLiked,
+        isLiked: isLiked ?? false,
         isActivated,
       };
       return result;

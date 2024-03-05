@@ -151,6 +151,7 @@ export class MeetingsController {
   @Get('/:id')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임 상세 조회' })
+  // @ApiBearerAuth('jwt')
   @ApiParam({ name: 'id', required: true, example: 1 })
   async getMeetingById(
     @Param('id', ParseIntPipe) id,
@@ -158,7 +159,7 @@ export class MeetingsController {
   ): Promise<object> {
     let user;
     // const token = req.cookies['jwt'];
-    const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (token) {
       user = verify(token, process.env.JWT_SECRET);
@@ -170,6 +171,7 @@ export class MeetingsController {
   @Get()
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임 목록 조회' })
+  @ApiBearerAuth('jwt')
   async getMeetings(
     @Req() req,
     @Query(GetMeetingsPipe)
@@ -178,7 +180,7 @@ export class MeetingsController {
     // console.log(req.headers)
     let user;
     // const token = req.cookies['jwt'];
-    const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (token) {
       user = verify(token, process.env.JWT_SECRET);

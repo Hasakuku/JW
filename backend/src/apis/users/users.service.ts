@@ -150,6 +150,7 @@ export class UserService {
     return result;
   }
 
+  //* 좋아요 추가
   async addLike(userId: number, meetingId: number): Promise<void> {
     const user = await this.usersRepository.findOne({
       where: { userId },
