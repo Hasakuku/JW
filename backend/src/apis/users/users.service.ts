@@ -268,8 +268,7 @@ export class UserService {
     const numPage = Number(page);
     const numPerPage = Number(perPage);
     const start = (numPage - 1) * numPerPage;
-    const end = numPage * numPerPage;
-
-    return user.likes.splice(start, end);
+    const end = start + numPerPage;
+    return user.likes.slice(start, end);
   }
 }
