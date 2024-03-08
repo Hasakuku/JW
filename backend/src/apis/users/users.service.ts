@@ -264,6 +264,7 @@ export class UserService {
     const { perPage = 10, page = 1 } = paginationDto;
     const user = await this.usersRepository.findOne({
       where: { userId },
+      relations: ['likes'],
     });
     const numPage = Number(page);
     const numPerPage = Number(perPage);
