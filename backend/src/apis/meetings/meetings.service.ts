@@ -199,7 +199,8 @@ export class MeetingsService {
         break;
     }
 
-    const meetings = await query.take(perPage).getMany();
+    const numPerPage = Number(perPage);
+    const meetings = await query.take(numPerPage).getMany();
 
     const meetingsWithAllCategories = await Promise.all(
       meetings.map(async (meeting) => {

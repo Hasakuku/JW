@@ -121,9 +121,11 @@ export class UserService {
   //* 유저 목록 조회
   async getUserAll(pagination: PaginationDto): Promise<User[]> {
     const { perPage = 10, page = 1 } = pagination;
+    const numPage = Number(page);
+    const numPerPage = Number(perPage);
     const getUserAll = await this.usersRepository.find({
-      skip: (page - 1) * perPage,
-      take: perPage,
+      skip: (numPage - 1) * numPerPage,
+      take: numPerPage,
     });
     return getUserAll;
   }
@@ -216,8 +218,10 @@ export class UserService {
       }),
     );
 
-    const start = (page - 1) * perPage;
-    const end = start + perPage;
+    const numPage = Number(page);
+    const numPerPage = Number(perPage);
+    const start = (numPage - 1) * numPerPage;
+    const end = start + numPerPage;
     const result = mapMeetings.slice(start, end);
     return result;
   }
@@ -261,8 +265,10 @@ export class UserService {
     const user = await this.usersRepository.findOne({
       where: { userId },
     });
-    const start = (page - 1) * perPage;
-    const end = page * perPage;
+    const numPage = Number(page);
+    const numPerPage = Number(perPage);
+    const start = (numPage - 1) * numPerPage;
+    const end = numPage * numPerPage;
 
     return user.likes.splice(start, end);
   }

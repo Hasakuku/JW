@@ -202,7 +202,9 @@ export class ParticipantService {
 
     if (paginationDto) {
       const { page = 1, perPage = 10 } = paginationDto;
-      query.skip((page - 1) * perPage).take(perPage);
+      const numPage = Number(page);
+      const numPerPage = Number(perPage);
+      query.skip((numPage - 1) * numPerPage).take(numPerPage);
     }
     const result = query.getRawMany();
     return result;
@@ -244,7 +246,9 @@ export class ParticipantService {
 
     if (paginationDto) {
       const { page = 1, perPage = 10 } = paginationDto;
-      query.skip((page - 1) * perPage).take(perPage);
+      const numPage = Number(page);
+      const numPerPage = Number(perPage);
+      query.skip((numPage - 1) * numPerPage).take(numPerPage);
     }
 
     const result = await query.getRawMany();
