@@ -158,6 +158,7 @@ export class ParticipantService {
           meeting_date: meeting.meeting_date,
           member_limit: meeting.member_limit,
           created_at: meeting.created_at,
+          host: meeting.host,
           participants_number: meeting.participants.length + 1,
           participants: meeting.participants,
           isLiked: meeting.isLiked ?? false,
