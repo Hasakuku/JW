@@ -180,12 +180,45 @@ export class UserService {
     const userId = user.userId;
     const getUser = await this.usersRepository.findOne({
       where: { userId },
-      relations: ['meetings'],
+      relations: [
+        'likes',
+        'meetings',
+        'meetings.participants',
+        'meetings.categories',
+      ],
     });
+    getUser.meetings.forEach((meeting) => {
+      meeting.participants = meeting.participants.filter(
+        (participant) => participant.status === 'attended',
+      );
+    });
+
+    const mapMeetings = await Promise.all(
+      getUser.meetings.map((meeting) => {
+        const isLiked = getUser.likes.some(
+          (likes) => likes.meetingId === meeting.meetingId,
+        );
+        return {
+          meetingId: meeting.meetingId,
+          title: meeting.title,
+          categories: meeting.categories,
+          image: meeting.image,
+          description: meeting.description,
+          location: meeting.location,
+          meeting_date: meeting.meeting_date,
+          member_limit: meeting.member_limit,
+          created_at: meeting.created_at,
+          host: meeting.user,
+          participants_number: meeting.participants.length + 1,
+          participants: meeting.participants,
+          isLiked: isLiked ?? false,
+        };
+      }),
+    );
 
     const start = (page - 1) * perPage;
     const end = start + perPage;
-    const result = getUser.meetings.slice(start, end);
+    const result = mapMeetings.slice(start, end);
     return result;
   }
 

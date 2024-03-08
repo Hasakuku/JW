@@ -132,13 +132,40 @@ export class ParticipantService {
   async getMeetingsByUserId(
     userId: number,
     paginationDto: PaginationDto,
-  ): Promise<Participant[]> {
+  ): Promise<object[]> {
     const { page = 1, perPage = 10 } = paginationDto;
-    return this.participantRepository.find({
+    const foundParticipant = await this.participantRepository.find({
       where: { user: { userId }, status: ParticipantStatus.ATTENDED },
+      relations: ['meeting'],
       skip: (page - 1) * perPage,
       take: perPage,
     });
+    const user = await this.userRepository.findOne({ where: { userId } });
+    const result = await Promise.all(
+      foundParticipant.map(async (participant) => {
+        const meetingId = participant.meeting.meetingId;
+        const meeting = await this.meetingService.getMeetingById(
+          meetingId,
+          user,
+        );
+        return {
+          meetingId: meeting.meetingId,
+          title: meeting.title,
+          categories: meeting.categories,
+          image: meeting.image,
+          description: meeting.description,
+          location: meeting.location,
+          meeting_date: meeting.meeting_date,
+          member_limit: meeting.member_limit,
+          created_at: meeting.created_at,
+          participants_number: meeting.participants.length + 1,
+          participants: meeting.participants,
+          isLiked: meeting.isLiked ?? false,
+        };
+      }),
+    );
+
+    return result;
   }
 
   async getParticipantsById(id: number): Promise<Participant> {
