@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -22,6 +23,29 @@ export class UserService {
     private readonly meetingRepository: MeetingRepository,
   ) {}
 
+  //* 유저 탈퇴
+  async withdraw(user: User): Promise<void> {
+    await this.usersRepository.softDelete({ userId: user.userId });
+  }
+
+  //* 유저 삭제
+  async deleteUser(user: User, deletedUserId: number): Promise<void> {
+    if (user.isAdmin !== true) {
+      throw new ForbiddenException('접근 권한이 없습니다.');
+    }
+
+    const foundUser = await this.usersRepository.findOne({
+      where: { userId: deletedUserId },
+    });
+    if (!foundUser) {
+      throw new NotFoundException(
+        `${deletedUserId}에 해당하는 사용자를 찾을 수 없습니다.`,
+      );
+    }
+    await this.usersRepository.delete({ userId: deletedUserId });
+  }
+
+  //* 유저 생성
   async createUser(createUserDto: CreateUserDto): Promise<void> {
     const { email, password, categoryIds, ...rest } = createUserDto;
 
@@ -53,6 +77,7 @@ export class UserService {
     }
   }
 
+  //* 유저 수정
   async updateUser(
     userId: number,
     updateUserDto: UpdateUserDto,
@@ -73,6 +98,7 @@ export class UserService {
     return user;
   }
 
+  //* 비밀번호 수정
   async updatePassword(email: string, newPassword: string): Promise<boolean> {
     const user = await this.usersRepository.findOneBy({ email });
     if (!user) {
@@ -85,6 +111,7 @@ export class UserService {
     return !!result;
   }
 
+  //* 유저 목록 조회
   async getUserAll(pagination: PaginationDto): Promise<User[]> {
     const { perPage = 10, page = 1 } = pagination;
     const getUserAll = await this.usersRepository.find({
@@ -94,6 +121,7 @@ export class UserService {
     return getUserAll;
   }
 
+  //* 유저 상세 조회
   async getUserById(userId: number): Promise<User> {
     const getUser = await this.usersRepository.findOne({
       where: { userId },
@@ -101,6 +129,8 @@ export class UserService {
     });
     return getUser;
   }
+
+  //* 다른 유저 프로필 조회
   async getOtherUserById(userId: number): Promise<object> {
     const getUser = await this.usersRepository.findOne({
       where: { userId },
@@ -115,6 +145,7 @@ export class UserService {
     return result;
   }
 
+  //* 이메일로 유저 조회
   async getUserByEmail(email: string): Promise<User> {
     const getUser = await this.usersRepository.findOne({
       where: { email },
@@ -133,6 +164,7 @@ export class UserService {
     return !result;
   }
 
+  //* 유저 개설 모임 조회
   async getMeetingsByUser(
     user: User,
     paginationDto: PaginationDto,
@@ -166,10 +198,11 @@ export class UserService {
     ) {
       user.likes.push(meeting);
     }
-    // console.log(user.likes)
+
     await this.usersRepository.save(user);
   }
 
+  //* 좋아요 삭제
   async removeLike(userId: number, meetingId: number): Promise<void> {
     const user = await this.usersRepository.findOne({
       where: { userId },
@@ -179,6 +212,7 @@ export class UserService {
     await this.usersRepository.save(user);
   }
 
+  //* 좋아요 목록 조회
   async getLikes(
     userId: number,
     paginationDto?: PaginationDto,

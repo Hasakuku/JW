@@ -74,7 +74,7 @@ export class MeetingsService {
         where: { userId: user.userId },
         relations: ['likes'],
       });
-      console.log(getUser);
+
       isLiked = getUser.likes.some(
         (likes) => likes.meetingId === meeting.meetingId,
       );
@@ -262,14 +262,37 @@ export class MeetingsService {
   //* 모임 수정
   async updateMeeting(
     meetingId: number,
+    user: User,
     updateMeetingDto: UpdateMeetingDto,
-  ): Promise<Meeting> {
-    const meeting = await this.meetingRepository.findOneBy({ meetingId });
+  ): Promise<object> {
+    const meeting = await this.meetingRepository.findOne({
+      where: { meetingId },
+      relations: ['user'],
+    });
     if (!meeting) {
       throw new NotFoundException(`${meetingId}를 찾을 수 없습니다. `);
     }
+    if (user.userId !== meeting.user.userId && user.isAdmin === false) {
+      throw new ForbiddenException('권한이 없습니다.');
+    }
 
     const updatedMeeting = Object.assign(meeting, updateMeetingDto);
-    return await this.meetingRepository.save(updatedMeeting);
+    // return await this.meetingRepository.save(updatedMeeting);
+    return await this.meetingRepository.update(meetingId, updatedMeeting);
+  }
+
+  //* 모임 삭제
+  async deleteMeeting(meetingId: number, user: User): Promise<object> {
+    const meeting = await this.meetingRepository.findOne({
+      where: { meetingId },
+      relations: ['user'],
+    });
+    if (!meeting) {
+      throw new NotFoundException(`${meetingId}를 찾을 수 없습니다. `);
+    }
+    if (user.userId !== meeting.user.userId && user.isAdmin === false) {
+      throw new ForbiddenException('권한이 없습니다.');
+    }
+    return await this.meetingRepository.delete(meetingId);
   }
 }

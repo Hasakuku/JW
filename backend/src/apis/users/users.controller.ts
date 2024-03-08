@@ -43,18 +43,26 @@ export class UsersController {
     status: 204,
     description: '사용자 탈퇴',
   })
-  async withdraw() {}
+  async withdraw(@Req() req): Promise<object> {
+    const user = req.user;
+    await this.userService.withdraw(user);
+    return { message: '유저 탈퇴 성공' };
+  }
 
   //* 사용자 삭제
   @UseGuards(AuthGuard('jwt'))
-  @Delete('/delete')
+  @Delete('/:id/delete')
   @ApiBearerAuth('jwt')
   @ApiOperation({ summary: '사용자 삭제' })
   @ApiResponse({
     status: 204,
     description: '사용자 삭제',
   })
-  async deleteUser() {}
+  async deleteUser(@Req() req, @Param('id') deletedUserId: number) {
+    const user = req.user;
+    await this.userService.deleteUser(user, deletedUserId);
+    return { message: '유저 삭제 성공' };
+  }
 
   //* 이메일 중복 확인
   @Get('check-email')

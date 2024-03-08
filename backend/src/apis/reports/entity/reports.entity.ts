@@ -4,6 +4,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -23,11 +24,11 @@ export class MeetingReport {
   @Column()
   content: string;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'reporterId' })
   reporter: User;
 
-  @OneToOne(() => Meeting)
+  @ManyToOne(() => Meeting)
   @JoinColumn({ name: 'meetingId' })
   meeting: Meeting;
 }

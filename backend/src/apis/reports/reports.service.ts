@@ -26,10 +26,12 @@ export class ReportsService {
     const meeting = await this.meetingRepository.findOne({
       where: { meetingId },
     });
+
     const report = new MeetingReport();
     report.content = content;
     report.reporter = user;
     report.meeting = meeting;
+
     await this.meetingReportRepository.save(report);
     return;
   }

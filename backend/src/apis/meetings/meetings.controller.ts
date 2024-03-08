@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -15,7 +16,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
-import { CreateMeetingDto } from './dto/create-meeting.dto';
+import { CreateMeetingDto, UpdateMeetingDto } from './dto/create-meeting.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -32,7 +33,6 @@ import { GetMeetingsPipe } from './pipes/getMeetings.pipe';
 import { UserService } from '../users/users.service';
 import { verify } from 'jsonwebtoken';
 import { PaginationDto } from 'src/constant/pagination.dto';
-import { ExtractJwt } from 'passport-jwt';
 
 @ApiTags('Meetings')
 @Controller('meetings')
@@ -42,6 +42,52 @@ export class MeetingsController {
     private participantService: ParticipantService,
     private userService: UserService,
   ) {}
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/:id')
+  @UsePipes(ValidationPipe)
+  @ApiBearerAuth('jwt')
+  @ApiOperation({ summary: '모임 삭제' })
+  @ApiResponse({
+    status: 201,
+    description: '모임 삭제 성공',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'UnAuthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  async deleteMeeting(
+    @Param('id') meetingId: number,
+    @Req() req,
+  ): Promise<object> {
+    const user = req.user;
+    await this.meetingsService.deleteMeeting(meetingId, user);
+    return { message: '모임 삭제 성공' };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('/:id')
+  @UsePipes(ValidationPipe)
+  @ApiBearerAuth('jwt')
+  @ApiOperation({ summary: '모임 수정' })
+  @ApiBody({ type: UpdateMeetingDto })
+  @ApiResponse({
+    status: 201,
+    description: '모임 수정 성공',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'UnAuthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  async updateMeeting(
+    @Body(new ValidationPipe({ transform: true }))
+    updateMeeting: UpdateMeetingDto,
+    @Param('id') meetingId: number,
+    @Req() req,
+  ): Promise<object> {
+    const user = req.user;
+    await this.meetingsService.updateMeeting(meetingId, user, updateMeeting);
+    return { message: '모임 수정 성공' };
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
@@ -176,7 +222,6 @@ export class MeetingsController {
     @Query(GetMeetingsPipe)
     getMeetingsDto: GetMeetingsDto,
   ): Promise<object> {
-    // console.log(req.headers)
     let user;
     // const token = req.cookies['jwt'];
     const token = req.headers.authorization?.split(' ')[1];

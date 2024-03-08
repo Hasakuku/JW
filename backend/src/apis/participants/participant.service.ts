@@ -28,7 +28,25 @@ export class ParticipantService {
   ): Promise<Participant> {
     const userId = user.userId;
     const getUser = await this.userRepository.findOneBy({ userId });
-    const getMeeting = await this.meetingRepository.findOneBy({ meetingId });
+    const getMeeting = await this.meetingRepository.findOne({
+      where: { meetingId },
+      relations: ['participants'],
+    });
+    if (!getMeeting) {
+      throw new NotFoundException(
+        `${meetingId}에 해당하는 모임을 찾을 수 없습니다.`,
+      );
+    }
+    const existParticipant = getMeeting.participants.find(
+      (participant) => user.userId === participant.user.userId,
+    );
+
+    if (existParticipant) {
+      await this.updateParticipant(
+        existParticipant.participantId,
+        ParticipantStatus.PENDING,
+      );
+    }
 
     const participant = new Participant();
     participant.user = getUser;
@@ -38,6 +56,7 @@ export class ParticipantService {
     await this.participantRepository.save(participant);
     return participant;
   }
+
   async participantById(participantId: number): Promise<Participant> {
     return this.participantRepository.getParticipantById(participantId);
   }
