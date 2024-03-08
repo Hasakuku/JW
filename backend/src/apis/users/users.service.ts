@@ -82,17 +82,24 @@ export class UserService {
     userId: number,
     updateUserDto: UpdateUserDto,
   ): Promise<User> {
+    const { password, categoryIds, ...rest } = updateUserDto;
     const user = await this.getUserById(userId);
     if (!user) throw new NotFoundException(userMessage.USER_NOTFOUND);
 
     // 비밀번호가 제공된 경우에만 업데이트
-    if (updateUserDto.password) {
+    if (password) {
       await user.setPassword(updateUserDto.password);
       // 비밀번호는 이미 처리되었으므로 삭제
       delete updateUserDto.password;
     }
 
-    Object.assign(user, updateUserDto);
+    Object.assign(user, { ...rest });
+    if (categoryIds) {
+      const categories = await this.categoryRepository.find({
+        where: { categoryId: In(categoryIds) },
+      });
+      user.categories = categories;
+    }
 
     await this.usersRepository.save(user);
     return user;
@@ -194,7 +201,7 @@ export class UserService {
 
     if (
       user.likes &&
-      !user.likes.find((like) => like.meetingId === meetingId)
+      !user.likes.some((like) => like.meetingId === meetingId)
     ) {
       user.likes.push(meeting);
     }

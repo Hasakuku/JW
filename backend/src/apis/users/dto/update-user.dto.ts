@@ -36,8 +36,12 @@ export class UpdateUserDto {
   @IsOptional()
   profileImage?: string;
 
-  @ApiProperty({ example: '123456' })
-  @IsString()
+  @ApiProperty({ example: [1, 2] })
   @IsOptional()
-  resetPasswordCode?: number;
+  categoryIds?: number[];
+
+  // @ApiProperty({ example: '123456' })
+  // @IsString()
+  // @IsOptional()
+  // resetPasswordCode?: number;
 }
