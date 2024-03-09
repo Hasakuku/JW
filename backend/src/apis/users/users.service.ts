@@ -200,6 +200,7 @@ export class UserService {
         const isLiked = getUser.likes.some(
           (likes) => likes.meetingId === meeting.meetingId,
         );
+
         return {
           meetingId: meeting.meetingId,
           title: meeting.title,
@@ -260,16 +261,40 @@ export class UserService {
   async getLikes(
     userId: number,
     paginationDto?: PaginationDto,
-  ): Promise<Meeting[]> {
+  ): Promise<object> {
     const { perPage = 10, page = 1 } = paginationDto;
     const user = await this.usersRepository.findOne({
       where: { userId },
-      relations: ['likes'],
+      relations: ['likes', 'likes.categories', 'likes.user'],
     });
+
+    const result = await Promise.all(
+      user.likes.map((like) => {
+        const host = {
+          email: like.user.email,
+          nickname: like.user.nickname,
+          profileImage: like.user.profileImage,
+          categories: like.user.categories,
+        };
+        return {
+          meetingId: like.meetingId,
+          title: like.title,
+          categories: like.categories,
+          image: like.image,
+          description: like.description,
+          location: like.location,
+          meeting_date: like.meeting_date,
+          member_limit: like.member_limit,
+          created_at: like.created_at,
+          host,
+          participants: like.participants,
+        };
+      }),
+    );
     const numPage = Number(page);
     const numPerPage = Number(perPage);
     const start = (numPage - 1) * numPerPage;
     const end = start + numPerPage;
-    return user.likes.slice(start, end);
+    return result.slice(start, end);
   }
 }

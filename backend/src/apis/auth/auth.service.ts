@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
@@ -150,9 +151,10 @@ export class AuthService {
     const user = await this.userService.getUserByEmail(email);
     if (type === 'signup' && user) {
       throw new ConflictException(authMessage.SIGNUP_CONFLICT_EMAIL);
-    }
-    if (type === 'resetPW' && !user) {
+    } else if (type === 'resetPW' && !user) {
       throw new NotFoundException(userMessage.USER_NOTFOUND);
+    } else {
+      throw new BadRequestException();
     }
 
     const resetCode = Math.floor(100000 + Math.random() * 900000);
@@ -207,9 +209,9 @@ export class AuthService {
     return true;
   }
 
-  async invalidateUserToken(token): Promise<void> {
-    
-  }
+  // async invalidateUserToken(token): Promise<void> {
+
+  // }
 
   //  async resetPassword(email: string, newPassword: string): Promise<void> {
   //   const user = await this.userService.getUserByEmail(email);

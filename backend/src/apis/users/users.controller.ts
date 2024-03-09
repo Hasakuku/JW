@@ -171,7 +171,7 @@ export class UsersController {
   }
 
   //* 다른 사용자 정보 조회
-  @Get('/profile-others')
+  @Get('/:id/profile-others')
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '다른 사용자 정보 조회' })
   @ApiResponse({
@@ -179,8 +179,8 @@ export class UsersController {
     description: '다른 사용자 정보 조회 성공',
     type: User,
   })
-  async getOtherUser(@Req() req): Promise<object> {
-    const result = await this.userService.getOtherUserById(req.user.userId);
+  async getOtherUser(@Param('id') id: number): Promise<object> {
+    const result = await this.userService.getOtherUserById(id);
     return { result };
   }
 
