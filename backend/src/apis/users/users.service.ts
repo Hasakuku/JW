@@ -271,6 +271,7 @@ export class UserService {
     const result = await Promise.all(
       user.likes.map((like) => {
         const host = {
+          userId: like.user.userId,
           email: like.user.email,
           nickname: like.user.nickname,
           profileImage: like.user.profileImage,
