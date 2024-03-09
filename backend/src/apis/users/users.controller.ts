@@ -177,7 +177,6 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: '다른 사용자 정보 조회 성공',
-    type: User,
   })
   async getOtherUser(@Param('id') id: number): Promise<object> {
     const result = await this.userService.getOtherUserById(id);
