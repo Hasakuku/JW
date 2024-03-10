@@ -140,17 +140,22 @@ export class MeetingsController {
     return { message: '좋아요 삭제 성공' };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id/participants')
-  @UsePipes(ValidationPipe)
+  @ApiBearerAuth('jwt')
+  // @UsePipes(ValidationPipe)
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({ summary: '모임의 참가 상태 목록 조회' })
   @ApiParam({ name: 'id', required: true, example: 1 })
   async getParticipantsByMeetingId(
     @Param('id', ParseIntPipe) id: number,
     @Query() paginationDto: PaginationDto,
+    @Req() req,
   ): Promise<object> {
+    const user = req.user;
     const result = await this.participantService.getParticipantsByMeetingId(
       id,
+      user,
       paginationDto,
     );
     return { result };

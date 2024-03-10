@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -173,19 +174,20 @@ export class ParticipantService {
     return await this.participantRepository.getParticipantById(id);
   }
 
-  // async getParticipantsByMeetingId(meetingId: number): Promise<Participant[]> {
-  //   return this.participantRepository.find({
-  //     where: {
-  //       meetingId,
-  //     },
-  //     select: ['participantId', 'status', 'userId'],
-  //     relations: ['userId'],
-  //   });
-  // }
   async getParticipantsByMeetingId(
     meetingId: number,
+    user: User,
     paginationDto?: PaginationDto,
   ): Promise<Participant[]> {
+    const foundMeeting = await this.meetingRepository.findOne({
+      where: { meetingId },
+      relations: ['user'],
+    });
+
+    if (foundMeeting.user.userId !== user.userId) {
+      throw new ForbiddenException('접근 권한이 없습니다.');
+    }
+
     const query = await this.participantRepository
       .createQueryBuilder('participant')
       .select([
@@ -206,7 +208,8 @@ export class ParticipantService {
       const numPerPage = Number(perPage);
       query.skip((numPage - 1) * numPerPage).take(numPerPage);
     }
-    const result = query.getRawMany();
+    const result: Promise<Participant[]> = query.getRawMany();
+
     return result;
   }
 
@@ -215,15 +218,6 @@ export class ParticipantService {
     return meeting;
   }
 
-  // async getParticipantsAttendingByMeetingId(
-  //   meetingId: number,
-  // ): Promise<Participant[]> {
-  //   return this.participantRepository.find({
-  //     where: { meetingId, status: ParticipantStatus.ATTENDED },
-  //     select: ['participantId', 'status', 'userId'],
-  //     relations: ['userId'],
-  //   });
-  // }
   async getParticipantsAttendingByMeetingId(
     meetingId: number,
     paginationDto?: PaginationDto,

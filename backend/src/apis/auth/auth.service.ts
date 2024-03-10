@@ -153,9 +153,10 @@ export class AuthService {
       throw new ConflictException(authMessage.SIGNUP_CONFLICT_EMAIL);
     } else if (type === 'resetPW' && !user) {
       throw new NotFoundException(userMessage.USER_NOTFOUND);
-    } else {
-      throw new BadRequestException();
     }
+    // else {
+    //   throw new BadRequestException();
+    // }
 
     const resetCode = Math.floor(100000 + Math.random() * 900000);
     const codeExpirationTime = new Date();

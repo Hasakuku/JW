@@ -277,9 +277,18 @@ export class MeetingsService {
       throw new ForbiddenException('권한이 없습니다.');
     }
 
-    const updatedMeeting = Object.assign(meeting, updateMeetingDto);
-    // return await this.meetingRepository.save(updatedMeeting);
-    return await this.meetingRepository.update(meetingId, updatedMeeting);
+    const { categories, ...rest } = updateMeetingDto;
+
+    const updatedMeeting = Object.assign(meeting, rest);
+
+    if (categories && Array.isArray(categories)) {
+      const getCategories = categories.map(async (categoryId) => {
+        return await this.categoryRepository.findOneBy({ categoryId });
+      });
+      updatedMeeting.categories = await Promise.all(getCategories);
+    }
+    return await this.meetingRepository.save(updatedMeeting);
+    // return await this.meetingRepository.update(meetingId, updatedMeeting);
   }
 
   //* 모임 삭제
