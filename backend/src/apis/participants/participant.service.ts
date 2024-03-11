@@ -40,33 +40,45 @@ export class ParticipantService {
       );
     }
 
-    const existParticipant = getMeeting.participants.map((participant) => {
+    // const existParticipant = getMeeting.participants.map((participant) => {
+    //   if (user.userId === participant.user.userId) {
+    //     if (
+    //       participant.status === ParticipantStatus.CANCELED ||
+    //       participant.status === ParticipantStatus.REJECTED
+    //     ) {
+    //       await this.updateParticipant(
+    //         participant.participantId,
+    //         ParticipantStatus.PENDING,
+    //       );
+    //     } else throw new ConflictException('이미 신청하였습니다.');
+    //   }
+    // });
+    for (const participant of getMeeting.participants) {
       if (user.userId === participant.user.userId) {
         if (
           participant.status === ParticipantStatus.CANCELED ||
           participant.status === ParticipantStatus.REJECTED
         ) {
-          this.updateParticipant(
+          await this.updateParticipant(
             participant.participantId,
             ParticipantStatus.PENDING,
           );
+          return;
         } else throw new ConflictException('이미 신청하였습니다.');
       }
-    });
+    }
     // if (existParticipant) {
     //   await this.updateParticipant(
     //     existParticipant.participantId,
     //     ParticipantStatus.PENDING,
     //   );
     // }
+    const newParticipant = new Participant();
+    newParticipant.user = getUser;
+    newParticipant.meeting = getMeeting;
+    newParticipant.description = description;
 
-    // const participant = new Participant();
-    // participant.user = getUser;
-    // participant.meeting = getMeeting;
-    // participant.description = description;
-
-    // await this.participantRepository.save(participant);
-    // return participant;
+    await this.participantRepository.save(newParticipant);
   }
 
   async participantById(participantId: number): Promise<Participant> {
