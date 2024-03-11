@@ -81,24 +81,28 @@ export class ParticipantController {
         summary: '참가 상태 수락',
         value: {
           status: ParticipantStatus.ATTENDED,
+          description: '예시',
         },
       },
       취소: {
         summary: '참가 상태 취소',
         value: {
           status: ParticipantStatus.CANCELED,
+          description: '예시',
         },
       },
       대기: {
         summary: '참가 상태 대기',
         value: {
           status: ParticipantStatus.PENDING,
+          description: '예시',
         },
       },
       거절: {
         summary: '참가 상태 거절',
         value: {
           status: ParticipantStatus.REJECTED,
+          description: '예시',
         },
       },
     },
@@ -106,8 +110,9 @@ export class ParticipantController {
   async update(
     @Param('id') id: number,
     @Body('status') status: ParticipantStatus,
+    @Body('description') description?: string,
   ): Promise<object> {
-    await this.participantService.updateParticipant(id, status);
+    await this.participantService.updateParticipant(id, status, description);
     return { message: '성공' };
   }
 

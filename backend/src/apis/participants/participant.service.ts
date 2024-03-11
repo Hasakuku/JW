@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -26,36 +27,46 @@ export class ParticipantService {
     user: User,
     meetingId: number,
     description: string = '안녕하세요',
-  ): Promise<Participant> {
+  ): Promise<void> {
     const userId = user.userId;
     const getUser = await this.userRepository.findOneBy({ userId });
     const getMeeting = await this.meetingRepository.findOne({
       where: { meetingId },
-      relations: ['participants'],
+      relations: ['participants', 'participants.user'],
     });
     if (!getMeeting) {
       throw new NotFoundException(
         `${meetingId}에 해당하는 모임을 찾을 수 없습니다.`,
       );
     }
-    const existParticipant = getMeeting.participants.find(
-      (participant) => user.userId === participant.user.userId,
-    );
 
-    if (existParticipant) {
-      await this.updateParticipant(
-        existParticipant.participantId,
-        ParticipantStatus.PENDING,
-      );
-    }
+    const existParticipant = getMeeting.participants.map((participant) => {
+      if (user.userId === participant.user.userId) {
+        if (
+          participant.status === ParticipantStatus.CANCELED ||
+          participant.status === ParticipantStatus.REJECTED
+        ) {
+          this.updateParticipant(
+            participant.participantId,
+            ParticipantStatus.PENDING,
+          );
+        } else throw new ConflictException('이미 신청하였습니다.');
+      }
+    });
+    // if (existParticipant) {
+    //   await this.updateParticipant(
+    //     existParticipant.participantId,
+    //     ParticipantStatus.PENDING,
+    //   );
+    // }
 
-    const participant = new Participant();
-    participant.user = getUser;
-    participant.meeting = getMeeting;
-    participant.description = description;
+    // const participant = new Participant();
+    // participant.user = getUser;
+    // participant.meeting = getMeeting;
+    // participant.description = description;
 
-    await this.participantRepository.save(participant);
-    return participant;
+    // await this.participantRepository.save(participant);
+    // return participant;
   }
 
   async participantById(participantId: number): Promise<Participant> {
@@ -65,6 +76,7 @@ export class ParticipantService {
   async updateParticipant(
     participantId: number,
     updatedParticipant: ParticipantStatus,
+    description?: string,
   ): Promise<Participant> {
     const participant = await this.participantRepository.findOne({
       where: { participantId },
@@ -80,6 +92,7 @@ export class ParticipantService {
       !(await this.meetingIsFull(participant.meeting.meetingId))
     ) {
       participant.status = updatedParticipant;
+      participant.description = description;
       return await this.participantRepository.save(participant);
     } else throw new BadRequestException('잘못된 요청입니다.');
   }
